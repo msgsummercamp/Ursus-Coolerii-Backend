@@ -1,7 +1,5 @@
 package com.example.airassist.persistence.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +13,6 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @Entity
-@Schema(description = "User entity")
 @Table(name = "users")
 public class User {
 
