@@ -26,17 +26,7 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    @Override
-    public Optional<User> findByUsername(String username) {
-        log.info("Finding user by username: {}", username);
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isEmpty()) {
-            log.warn("User not found with username: {}", username);
-        } else {
-            log.info("User found: {}", user.get());
-        }
-        return user;
-    }
+
 
     @Override
     public Optional<User> findByEmail(String email) {
@@ -55,8 +45,8 @@ public class UserServiceImpl implements UserService {
     public Optional<User> save(User user) {
         log.info("Saving user: {}", user);
 
-        if(userRepository.findByUsername(user.getUsername()).isPresent() || userRepository.findByEmail(user.getEmail()).isPresent()) {
-            log.warn("User with username {} and/or email {} already exists", user.getUsername(), user.getEmail());
+        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+            log.warn("User with email {} already exists", user.getEmail());
             return Optional.empty();
         }
 
@@ -158,8 +148,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private void fillNullFieldsForPatch(User uncompleteUser, User completeUser){
-        if (uncompleteUser.getUsername() == null)
-            uncompleteUser.setUsername(completeUser.getUsername());
         if (uncompleteUser.getPassword() == null)
             uncompleteUser.setPassword(completeUser.getPassword());
         if (uncompleteUser.getEmail() == null)
