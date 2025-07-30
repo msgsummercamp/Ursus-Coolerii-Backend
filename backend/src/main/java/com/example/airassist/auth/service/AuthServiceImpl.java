@@ -30,7 +30,6 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
       log.info("Log in request received: {}", loginRequest);

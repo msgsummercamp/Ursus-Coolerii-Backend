@@ -19,5 +19,5 @@ public class Passenger {
     private String phoneNumber;
     private String address;
     private String postalCode;
-
 }
+
