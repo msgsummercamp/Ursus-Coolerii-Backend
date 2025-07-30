@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/airports/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())
