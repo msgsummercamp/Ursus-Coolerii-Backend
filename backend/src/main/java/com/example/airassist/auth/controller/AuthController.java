@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private AuthService AuthService;
+    private final AuthService AuthService;
 
     @Autowired
     public AuthController(AuthService AuthService) {
@@ -30,20 +30,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
         log.info("Login request received : {}", loginRequest);
-
         LoginResponse loginResponse = AuthService.login(loginRequest);
         log.info("Logged in user: {}", loginResponse);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(loginResponse);
     }
 
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest){
         log.info("Signup request received : {}", signupRequest);
-
         SignupResponse signupResponse = AuthService.signup(signupRequest);
         log.info("Signed up  user: {}", signupResponse);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(signupResponse);
     }
 }

@@ -9,10 +9,10 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>springBoot1</artifactId>
+	<artifactId>air-assist</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>springBoot1</name>
-	<description>Demo project for Spring Boot</description>
+	<name>Air Assist</name>
+	<description>Demo project for Air Assist</description>
 	<url/>
 	<licenses>
 		<license/>

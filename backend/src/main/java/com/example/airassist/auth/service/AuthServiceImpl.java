@@ -1,6 +1,5 @@
 package com.example.airassist.auth.service;
 
-
 import com.example.airassist.dto.LoginRequest;
 import com.example.airassist.dto.LoginResponse;
 import com.example.airassist.dto.SignupRequest;
@@ -19,8 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -28,10 +25,10 @@ import java.util.Optional;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
-    private AuthenticationManager authenticationManager;
-    private JwtTokenProvider jwtTokenProvider;
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository,  PasswordEncoder passwordEncoder) {
@@ -45,7 +42,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
       log.info("Log in request received: {}", loginRequest);
-
       Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
               loginRequest.getUsername(),
               loginRequest.getPassword()
@@ -75,8 +71,6 @@ public class AuthServiceImpl implements AuthService {
         User user = User.builder()
                 .password(passwordEncoder.encode(signupRequest.getPassword()))
                 .email(signupRequest.getEmail())
-                .firstName(signupRequest.getFirstName())
-                .lastName(signupRequest.getLastName())
                 .role(new HashSet<>())
                 .build();
 

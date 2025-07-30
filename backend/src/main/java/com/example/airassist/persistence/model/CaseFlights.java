@@ -21,9 +21,7 @@ public class CaseFlights {
     private Flight flight;
 
     private boolean isProblemFlight;
-
     private boolean isFirst;
-
     private boolean isLast;
 }
 

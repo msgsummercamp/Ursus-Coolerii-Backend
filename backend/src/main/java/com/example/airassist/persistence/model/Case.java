@@ -31,8 +31,12 @@ public class Case {
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "passenger_id", nullable = false)
-    private User passenger;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name= "passenger_id", nullable = false)
+    private Passenger passenger;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
