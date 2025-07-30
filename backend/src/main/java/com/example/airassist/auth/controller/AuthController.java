@@ -1,32 +1,25 @@
 package com.example.airassist.auth.controller;
 
-
 import com.example.airassist.auth.service.AuthService;
 import com.example.airassist.dto.LoginRequest;
 import com.example.airassist.dto.LoginResponse;
 import com.example.airassist.dto.SignupRequest;
 import com.example.airassist.dto.SignupResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
 @Slf4j
 @RestController
 @Validated
 @RequestMapping("/api/auth")
+@AllArgsConstructor
 public class AuthController {
-
     private final AuthService AuthService;
-
-    @Autowired
-    public AuthController(AuthService AuthService) {
-        this.AuthService = AuthService;
-    }
-
+  
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
         log.info("Login request received : {}", loginRequest);

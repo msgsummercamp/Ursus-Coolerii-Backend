@@ -4,8 +4,8 @@ package com.example.airassist.user.controller;
 import com.example.airassist.persistence.model.User;
 import com.example.airassist.user.service.UserService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +20,9 @@ import java.util.List;
 @RequestMapping("/api/users")
 @Slf4j
 @Validated
+@AllArgsConstructor
 public class UserController {
-
     private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")

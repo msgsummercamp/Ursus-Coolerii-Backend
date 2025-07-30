@@ -9,8 +9,8 @@ import com.example.airassist.exceptions.UserSaveFailedException;
 import com.example.airassist.jwt.JwtTokenProvider;
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,21 +23,12 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository,  PasswordEncoder passwordEncoder) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        log.info("AuthServiceImpl initialized");
-    }
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
