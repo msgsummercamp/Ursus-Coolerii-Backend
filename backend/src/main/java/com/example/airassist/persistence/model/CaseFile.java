@@ -1,26 +1,21 @@
 package com.example.airassist.persistence.model;
 
+import com.example.airassist.common.CaseStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
-enum Status {
-    NOT_ASSIGNED,
-    ASSIGNED,
-    ELIGIBLE,
-    NOT_ELIGIBLE,
-}
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "cases")
-public class Case {
+public class CaseFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long caseId;
@@ -28,7 +23,7 @@ public class Case {
     @NotBlank(message = "The case should contain the reservation number")
     private String reservationNumber;
 
-    private Status status;
+    private CaseStatus status;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -46,8 +41,10 @@ public class Case {
     private List<CaseFlights> caseFlights;
 
     @OneToMany(mappedBy = "caseFile")
+    @JsonManagedReference
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "caseFile")
+    @JsonManagedReference
     private List<Document> documents;
 }

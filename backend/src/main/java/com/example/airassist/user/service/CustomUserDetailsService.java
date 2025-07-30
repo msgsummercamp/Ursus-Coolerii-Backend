@@ -1,4 +1,4 @@
-package com.example.airassist.auth.service;
+package com.example.airassist.user.service;
 
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;

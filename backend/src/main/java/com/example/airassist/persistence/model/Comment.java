@@ -1,5 +1,6 @@
 package com.example.airassist.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,9 +19,10 @@ public class Comment {
 
     private String content;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "case_id")
-    private Case caseFile;
+    private CaseFile caseFile;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

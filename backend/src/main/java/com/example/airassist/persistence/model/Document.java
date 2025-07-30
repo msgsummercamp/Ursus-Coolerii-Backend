@@ -1,5 +1,6 @@
 package com.example.airassist.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class Document {
     @Column(nullable = false)
     private byte[] content;
 
+    @JsonBackReference
     @ManyToOne
-    private Case caseFile;
+    private CaseFile caseFile;
 }
