@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface UserService {
-    Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
     Optional<User> save(User user);
     void deleteById(Long id);

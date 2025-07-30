@@ -7,11 +7,18 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "roles")
 @AllArgsConstructor
-public class Role {
+@Entity
+@Table(name = "documents")
+public class Document {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private @Id Long id;
-    private String name;
+    private Long id;
+
+    @Lob
+    @Column(nullable = false)
+    private byte[] content;
+
+    @ManyToOne
+    private Case caseFile;
 }

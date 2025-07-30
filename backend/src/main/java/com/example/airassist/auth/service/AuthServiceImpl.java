@@ -58,8 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     private void checkUserExists(String username, String email) throws UserAlreadyExistsException {
-        if(userRepository.findByUsername(username).isPresent() ||
-            userRepository.findByEmail(email).isPresent()
+        if(userRepository.findByEmail(email).isPresent()
         ){
             log.warn("User with username {} or email {}  already exists in DB", username, email);
             throw new UserAlreadyExistsException("User with username " +  username + "or email "+
@@ -74,7 +73,6 @@ public class AuthServiceImpl implements AuthService {
         checkUserExists(signupRequest.getUsername(), signupRequest.getEmail());
 
         User user = User.builder()
-                .username(signupRequest.getUsername())
                 .password(passwordEncoder.encode(signupRequest.getPassword()))
                 .email(signupRequest.getEmail())
                 .firstName(signupRequest.getFirstName())
@@ -95,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtTokenProvider.generateToken(authentication);
-        log.info("User {} saved and authenticated successfully", user.getUsername());
+        log.info("User {} saved and authenticated successfully", user.getEmail());
         return new SignupResponse(token);
     }
 }
