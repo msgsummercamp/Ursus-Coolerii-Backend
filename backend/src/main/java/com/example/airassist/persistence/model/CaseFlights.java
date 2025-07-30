@@ -13,7 +13,7 @@ public class CaseFlights {
     @ManyToOne
     @MapsId("caseId")
     @JoinColumn(name = "case_id")
-    private Case caseFile;
+    private CaseFile caseFile;
 
     @ManyToOne
     @MapsId("flightId")
@@ -21,9 +21,7 @@ public class CaseFlights {
     private Flight flight;
 
     private boolean isProblemFlight;
-
     private boolean isFirst;
-
     private boolean isLast;
 }
 
