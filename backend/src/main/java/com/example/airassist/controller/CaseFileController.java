@@ -1,25 +1,20 @@
 package com.example.airassist.controller;
 
+import com.example.airassist.dto.EligibilityRequest;
+import com.example.airassist.service.CaseFileService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/case-file")
 public class CaseFileController {
+    private CaseFileService caseFileService;
 
-    @PostMapping("/eligibility/cancellation")
-    public boolean isEligibleForCancellation(@RequestParam Integer noticeDays) {
-        return noticeDays < 14;
+    @PostMapping("/eligibility")
+    public ResponseEntity<Boolean> isEligible(@RequestBody EligibilityRequest eligibilityRequest) {
+        return ResponseEntity.ok(caseFileService.isEligible(eligibilityRequest));
     }
 
-    @PostMapping("/eligibility/delay")
-    public boolean isEligibleForDelay(@RequestParam(required = false, defaultValue = "0") Integer delayHours, @RequestParam Boolean arrived) {
-        return !arrived || delayHours > 3;
-    }
-
-    @PostMapping("/eligibility/denied-boarding")
-    public boolean isEligibleForDeniedBoarding(@RequestParam Boolean isVoluntarilyGivenUp) {
-        return !isVoluntarilyGivenUp;
-    }
 }
