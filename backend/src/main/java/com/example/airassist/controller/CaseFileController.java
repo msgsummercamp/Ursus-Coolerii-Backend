@@ -19,7 +19,7 @@ public class CaseFileController {
     }
 
     @PostMapping("/eligibility/denied-boarding")
-    public boolean isEligibleForDeniedBoarding(@RequestBody Boolean isVoluntarilyGivenUp) {
+    public boolean isEligibleForDeniedBoarding(@RequestParam Boolean isVoluntarilyGivenUp) {
         return !isVoluntarilyGivenUp;
     }
 }
