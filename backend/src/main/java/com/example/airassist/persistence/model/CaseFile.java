@@ -38,6 +38,7 @@ public class CaseFile {
     @JoinColumn(name = "employee_id")
     private User employee;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "caseFile")
     private List<CaseFlights> caseFlights;
 
