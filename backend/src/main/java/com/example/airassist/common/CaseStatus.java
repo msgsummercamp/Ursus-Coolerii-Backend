@@ -6,4 +6,3 @@ public enum CaseStatus {
     ELIGIBLE,
     NOT_ELIGIBLE,
 }
-
