@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import java.util.UUID;
 
 
 @Data
@@ -17,8 +18,8 @@ import java.util.List;
 @Table(name = "cases")
 public class CaseFile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long caseId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID caseId;
 
     @NotBlank(message = "The case should contain the reservation number")
     private String reservationNumber;

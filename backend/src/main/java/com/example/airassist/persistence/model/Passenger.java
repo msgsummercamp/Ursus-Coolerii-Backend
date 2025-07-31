@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Data;
 import java.util.Date;
+import java.util.UUID;
 
 
 @Data
@@ -12,12 +13,12 @@ import java.util.Date;
 public class Passenger {
 
     private @Id
-    @GeneratedValue Long id;
+    @GeneratedValue UUID id;
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
     private String phoneNumber;
     private String address;
     private String postalCode;
-}
 
+}

@@ -1,4 +1,4 @@
-package com.example.airassist.auth.service;
+package com.example.airassist.service;
 
 import com.example.airassist.dto.LoginRequest;
 import com.example.airassist.dto.LoginResponse;
@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -29,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {

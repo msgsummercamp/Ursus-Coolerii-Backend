@@ -1,7 +1,7 @@
-package com.example.airassist.airport.controller;
+package com.example.airassist.controller;
 
-import com.example.airassist.airport.service.AirportService;
-import com.example.airassist.dto.AirportAttributes;
+import com.example.airassist.redis.Airport;
+import com.example.airassist.service.AirportService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -12,17 +12,16 @@ import java.util.List;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/api/airports")
 @AllArgsConstructor
+@RequestMapping("/api/airports")
 public class AirportController {
     private final AirportService airportService;
 
     @RequestMapping
-    public List<AirportAttributes> getAllAirports(){
+    public List<Airport> getAllAirports(){
         log.info("Get all airports request received");
-        List<AirportAttributes> airports = airportService.getAllAirports();
+        List<Airport> airports = airportService.getAllAirports();
         log.info("Get all airports response, count {}",  airports.size());
         return airports;
     }
-
 }

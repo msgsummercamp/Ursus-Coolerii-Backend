@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,8 +15,8 @@ import java.util.Set;
 @Table(name = "users")
 public class User {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private @Id Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private @Id UUID id;
 
     @NotBlank(message = "User should have an email")
     @Email(message = "This field should be a valid email")

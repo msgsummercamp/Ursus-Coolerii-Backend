@@ -1,4 +1,4 @@
-package com.example.airassist.user.service;
+package com.example.airassist.service;
 
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
-  
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
