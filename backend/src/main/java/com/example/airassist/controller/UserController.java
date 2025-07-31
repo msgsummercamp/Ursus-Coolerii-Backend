@@ -1,20 +1,22 @@
-package com.example.airassist.user.controller;
+package com.example.airassist.controller;
 
 
 import com.example.airassist.persistence.model.User;
-import com.example.airassist.user.service.UserService;
+import com.example.airassist.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Pageable;
+
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,7 +27,6 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<List<User>> getAllUsers(
             @RequestParam(required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(required = false, defaultValue = "3") Integer pageSize
@@ -45,7 +46,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(
-            @PathVariable Long id){
+            @PathVariable UUID id){
         log.info("Trying to fetch user with id: {}", id);
 
         var user = userService.findById(id);
@@ -78,7 +79,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody User user){
          log.info("Trying to update user: {}", user);
          user.setId(id);
@@ -91,7 +92,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<User> patchUser(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody User user
     ){
         log.info("Trying to patch user: {}, id: {}" , user, id);
@@ -107,7 +108,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(
-        @PathVariable Long id
+        @PathVariable UUID id
     ){
         log.info("Trying to delete user with ID: {}", id);
         userService.deleteById(id);

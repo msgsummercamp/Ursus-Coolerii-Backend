@@ -1,6 +1,6 @@
-package com.example.airassist.auth.controller;
+package com.example.airassist.controller;
 
-import com.example.airassist.auth.service.AuthService;
+import com.example.airassist.service.AuthService;
 import com.example.airassist.dto.LoginRequest;
 import com.example.airassist.dto.LoginResponse;
 import com.example.airassist.dto.SignupRequest;

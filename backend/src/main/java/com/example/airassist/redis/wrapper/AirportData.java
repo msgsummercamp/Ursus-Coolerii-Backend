@@ -1,6 +1,6 @@
-package com.example.airassist.dto.wrapper;
+package com.example.airassist.redis.wrapper;
 
-import com.example.airassist.dto.AirportAttributes;
+import com.example.airassist.redis.AirportAttributes;
 import lombok.Data;
 
 @Data

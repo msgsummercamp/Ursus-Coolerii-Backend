@@ -1,4 +1,4 @@
-package com.example.airassist.dto;
+package com.example.airassist.redis;
 
 import lombok.Data;
 

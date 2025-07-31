@@ -1,4 +1,4 @@
-package com.example.airassist.user.service;
+package com.example.airassist.service;
 
 
 import com.example.airassist.exceptions.InvalidUserIdException;
@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         log.info("Deleting user with id: {}", id);
         if (!userRepository.existsById(id)) {
             log.warn("User with id {} not found", id);
@@ -93,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Optional<User> findById(Long id) {
+    public Optional<User> findById(UUID id) {
         log.info("Finding user by id: {}", id);
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty())

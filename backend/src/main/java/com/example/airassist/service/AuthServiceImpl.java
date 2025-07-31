@@ -1,4 +1,4 @@
-package com.example.airassist.auth.service;
+package com.example.airassist.service;
 
 import com.example.airassist.dto.LoginRequest;
 import com.example.airassist.dto.LoginResponse;
