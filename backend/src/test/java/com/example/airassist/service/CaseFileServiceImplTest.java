@@ -16,7 +16,7 @@ class CaseFileServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        caseFileService = new CaseFileServiceImpl();
+        caseFileService = new CaseFileServiceImpl(null);
     }
 
     @Nested
