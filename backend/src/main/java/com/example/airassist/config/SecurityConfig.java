@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/airports/**").permitAll()
+                        .requestMatchers("/api/case-files/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())

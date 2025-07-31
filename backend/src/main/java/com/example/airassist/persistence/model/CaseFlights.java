@@ -1,5 +1,6 @@
 package com.example.airassist.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ public class CaseFlights {
     @EmbeddedId
     private CaseFlightsId id;
 
+    @JsonBackReference
     @ManyToOne
     @MapsId("caseId")
     @JoinColumn(name = "case_id")
