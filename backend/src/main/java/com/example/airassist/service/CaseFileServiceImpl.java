@@ -5,6 +5,7 @@ import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.persistence.model.CaseFlights;
 import com.example.airassist.persistence.model.Flight;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.Max;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -21,6 +23,11 @@ import java.util.List;
 public class CaseFileServiceImpl implements CaseFileService {
 
     private final CaseFileRepository caseFileRepository;
+    private final int MIN_REWARD = 250;
+    private final int MED_REWARD = 400;
+    private final int MAX_REWARD = 600;
+    private final int LOW_DISTANCE_THRESHOLD = 1500;
+    private final int HIGH_DISTANCE_THRESHOLD = 3000;
 
     @Override
     public List<CaseFile> findAllCaseFiles() {
@@ -53,11 +60,11 @@ public class CaseFileServiceImpl implements CaseFileService {
         Flight arrival = lastFlight.getFlight();
         double distance = calculateDistance(departure.getDepartureAirport(), arrival.getDestinationAirport());
 
-        if (distance < 1500)
-            return 250;
-        else if (distance < 3000)
-            return 400;
-        else return 600;
+        if (distance < LOW_DISTANCE_THRESHOLD)
+            return MIN_REWARD;
+        else if (distance < HIGH_DISTANCE_THRESHOLD)
+            return MED_REWARD;
+        else return MAX_REWARD;
     }
 
     @Override
