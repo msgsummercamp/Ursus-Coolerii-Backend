@@ -25,9 +25,10 @@ public class CaseFileControllerTest {
     private CaseFileController caseFileController;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        caseFileController = new CaseFileController(caseFileService);
+    void setUp() throws Exception {
+        try (var ignored = MockitoAnnotations.openMocks(this)) {
+            caseFileController = new CaseFileController(caseFileService);
+        }
     }
 
     @Nested
@@ -46,7 +47,7 @@ public class CaseFileControllerTest {
             ResponseEntity<Boolean> response = caseFileController.isEligible(request);
 
             assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-            assertTrue(Boolean.TRUE.equals(response.getBody()));
+            assertEquals(Boolean.TRUE, response.getBody());
         }
 
         @Test
@@ -128,7 +129,7 @@ public class CaseFileControllerTest {
             ResponseEntity<Boolean> response = caseFileController.isEligible(request);
 
             assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-            assertTrue(Boolean.TRUE.equals(response.getBody()));
+            assertEquals(Boolean.TRUE, response.getBody());
         }
 
         @Test
@@ -144,7 +145,7 @@ public class CaseFileControllerTest {
             ResponseEntity<Boolean> response = caseFileController.isEligible(request);
 
             assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-            assertFalse(Boolean.TRUE.equals(response.getBody()));
+            assertNotEquals(Boolean.TRUE, response.getBody());
         }
 
         @Test
@@ -160,7 +161,7 @@ public class CaseFileControllerTest {
             ResponseEntity<Boolean> response = caseFileController.isEligible(request);
 
             assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-            assertFalse(Boolean.TRUE.equals(response.getBody()));
+            assertNotEquals(Boolean.TRUE, response.getBody());
         }
     }
 
@@ -180,7 +181,7 @@ public class CaseFileControllerTest {
             ResponseEntity<Boolean> response = caseFileController.isEligible(request);
 
             assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-            assertTrue(Boolean.TRUE.equals(response.getBody()));
+            assertEquals(Boolean.TRUE, response.getBody());
         }
 
         @Test
@@ -195,7 +196,7 @@ public class CaseFileControllerTest {
             ResponseEntity<Boolean> response = caseFileController.isEligible(request);
 
             assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-            assertFalse(Boolean.TRUE.equals(response.getBody()));
+            assertNotEquals(Boolean.TRUE, response.getBody());
         }
     }
 }
