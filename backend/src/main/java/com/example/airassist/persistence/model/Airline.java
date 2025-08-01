@@ -13,7 +13,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "airlines")
 public class Airline {
-    @GeneratedValue(strategy = GenerationType.UUID)
     private @Id UUID airlineId;
     private String name;
     private String iataCode;

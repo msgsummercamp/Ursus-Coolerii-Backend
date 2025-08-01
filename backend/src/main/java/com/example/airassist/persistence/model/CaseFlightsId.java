@@ -11,6 +11,6 @@ public class CaseFlightsId implements Serializable {
     private UUID caseId;
 
     @Column(name = "flight_id")
-    private String flightId;
+    private UUID flightId;
 
 }

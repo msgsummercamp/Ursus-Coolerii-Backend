@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -15,13 +15,11 @@ import java.util.Date;
 @Entity
 @Table(name = "flights")
 public class Flight {
-    @Id
-    @NotBlank(message = "Flight should have a flight number")
-    private String flightId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private @Id UUID flightId;
 
-    @NotBlank(message = "Flight should have a departure date")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "yyyy-MM-dd")
-    private Date flightDate;
+    @NotBlank(message = "Flight should have a flight number")
+    private String flightNumber;
 
     @ManyToOne
     @JoinColumn(name = "airline_id")
