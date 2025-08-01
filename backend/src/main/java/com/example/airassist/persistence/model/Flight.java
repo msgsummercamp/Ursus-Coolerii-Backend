@@ -1,8 +1,6 @@
 package com.example.airassist.persistence.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,8 +23,9 @@ public class Flight {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "yyyy-MM-dd")
     private Date flightDate;
 
-    @NotBlank(message = "Flight should have an airline assigned to it")
-    private String airline;
+    @ManyToOne
+    @JoinColumn(name = "airline_id")
+    private Airline airline;
 
     @NotBlank(message = "Flight should have a departure airport")
     private String departureAirport;
