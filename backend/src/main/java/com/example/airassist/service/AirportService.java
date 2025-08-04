@@ -1,7 +1,7 @@
 package com.example.airassist.service;
 
 import com.example.airassist.redis.Airport;
-import com.example.airassist.persistence.dao.AirportRepository;
+import com.example.airassist.redis.AirportRedisRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +16,14 @@ import java.util.stream.StreamSupport;
 @Data
 @AllArgsConstructor
 public class AirportService {
-    private final AirportRepository airportRepository;
+    private final AirportRedisRepository airportRedisRepository;
     private final RedisTemplate redisTemplate;
 
     public List<Airport> getAllAirports() {
         List<Airport> cached = (List<Airport>) redisTemplate.opsForValue().get("airports");
         if (cached != null) return cached;
         List<Airport> fromRepo = StreamSupport
-                .stream(airportRepository.findAll().spliterator(), false)
+                .stream(airportRedisRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
         redisTemplate.opsForValue().set("airports", fromRepo);
         return fromRepo;

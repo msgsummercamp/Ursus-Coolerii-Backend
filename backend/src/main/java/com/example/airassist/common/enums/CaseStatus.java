@@ -1,4 +1,4 @@
-package com.example.airassist.common;
+package com.example.airassist.common.enums;
 
 public enum CaseStatus {
     NOT_ASSIGNED,

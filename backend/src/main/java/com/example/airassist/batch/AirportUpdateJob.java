@@ -1,6 +1,6 @@
-package com.example.airassist.initializer;
+package com.example.airassist.batch;
 
-import com.example.airassist.persistence.dao.AirportRepository;
+import com.example.airassist.redis.AirportRedisRepository;
 import com.example.airassist.redis.Airport;
 import com.example.airassist.redis.wrapper.AirportResponse;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,8 +16,8 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class AirportDataInitializer {
-    private final AirportRepository airportRepository;
+public class AirportUpdateJob {
+    private final AirportRedisRepository airportRedisRepository;
     private final RestTemplate restTemplate;
     private final RedisTemplate redisTemplate;
 
@@ -28,8 +28,8 @@ public class AirportDataInitializer {
     private String url;
 
     @Autowired
-    public AirportDataInitializer(AirportRepository airportRepository,  RestTemplate restTemplate, RedisTemplate redisTemplate) {
-        this.airportRepository = airportRepository;
+    public AirportUpdateJob(AirportRedisRepository airportRedisRepository, RestTemplate restTemplate, RedisTemplate redisTemplate) {
+        this.airportRedisRepository = airportRedisRepository;
         this.restTemplate = restTemplate;
         this.redisTemplate = redisTemplate;
     }
@@ -38,7 +38,7 @@ public class AirportDataInitializer {
     private void initAirports() throws InterruptedException {
         log.info("Initializing airports....");
         List<Airport> airports = fetchAirportList();
-        airportRepository.saveAll(airports);
+        airportRedisRepository.saveAll(airports);
         redisTemplate.opsForValue().set("airports", airports);
         log.info("Airports initialized");
     }
@@ -47,10 +47,12 @@ public class AirportDataInitializer {
         List<Airport> airports = new ArrayList<>();
         for (int i = 0; i <= pageCount; i++) {
             try {
+                if(i != 0 && i % 100 == 0){
+                    Thread.sleep(60000);
+                }
                 airports.addAll(convertAirportFromWrapper(
                         restTemplate.getForObject(i == 0 ? url : url + "?page=" + i, AirportResponse.class)
                 ));
-                Thread.sleep(100);
             } catch (TooManyRequests e) {
                 log.warn("Rate limited, waiting 30 seconds before retrying page {}", i);
                 Thread.sleep(30000);

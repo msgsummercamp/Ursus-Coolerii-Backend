@@ -1,6 +1,6 @@
 package com.example.airassist.persistence.model;
 
-import com.example.airassist.common.CaseStatus;
+import com.example.airassist.common.enums.CaseStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

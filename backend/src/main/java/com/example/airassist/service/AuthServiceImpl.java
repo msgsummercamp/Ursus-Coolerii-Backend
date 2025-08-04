@@ -1,11 +1,11 @@
 package com.example.airassist.service;
 
-import com.example.airassist.dto.LoginRequest;
-import com.example.airassist.dto.LoginResponse;
-import com.example.airassist.dto.SignupRequest;
-import com.example.airassist.dto.SignupResponse;
-import com.example.airassist.exceptions.UserAlreadyExistsException;
-import com.example.airassist.exceptions.UserSaveFailedException;
+import com.example.airassist.common.dto.LoginRequest;
+import com.example.airassist.common.dto.LoginResponse;
+import com.example.airassist.common.dto.SignupRequest;
+import com.example.airassist.common.dto.SignupResponse;
+import com.example.airassist.common.exceptions.UserAlreadyExistsException;
+import com.example.airassist.common.exceptions.UserSaveFailedException;
 import com.example.airassist.jwt.JwtTokenProvider;
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 
