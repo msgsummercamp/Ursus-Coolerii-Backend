@@ -1,8 +1,8 @@
+package com.example.airassist.service;
+
 import com.example.airassist.common.dto.LoginRequest;
 import com.example.airassist.jwt.JwtTokenProvider;
 import com.example.airassist.persistence.dao.UserRepository;
-import com.example.airassist.service.AuthService;
-import com.example.airassist.service.AuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

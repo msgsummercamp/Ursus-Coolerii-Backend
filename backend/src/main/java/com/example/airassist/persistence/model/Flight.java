@@ -1,15 +1,13 @@
 package com.example.airassist.persistence.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -17,16 +15,15 @@ import java.util.Date;
 @Entity
 @Table(name = "flights")
 public class Flight {
-    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private @Id UUID flightId;
+
     @NotBlank(message = "Flight should have a flight number")
-    private String flightId;
+    private String flightNumber;
 
-    @NotBlank(message = "Flight should have a departure date")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "yyyy-MM-dd")
-    private Date flightDate;
-
-    @NotBlank(message = "Flight should have an airline assigned to it")
-    private String airline;
+    @ManyToOne
+    @JoinColumn(name = "airline_id")
+    private Airline airline;
 
     @NotBlank(message = "Flight should have a departure airport")
     private String departureAirport;

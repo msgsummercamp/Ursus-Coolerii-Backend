@@ -1,7 +1,7 @@
+package com.example.airassist.service;
+
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
-import com.example.airassist.service.UserService;
-import com.example.airassist.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
