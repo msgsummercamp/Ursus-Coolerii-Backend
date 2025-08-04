@@ -1,9 +1,8 @@
 package com.example.airassist.service;
 
-
-import com.example.airassist.exceptions.InvalidUserIdException;
-import com.example.airassist.exceptions.UserNotFoundException;
-import com.example.airassist.exceptions.UserSaveFailedException;
+import com.example.airassist.common.exceptions.InvalidUserIdException;
+import com.example.airassist.common.exceptions.UserNotFoundException;
+import com.example.airassist.common.exceptions.UserSaveFailedException;
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
 import lombok.extern.slf4j.Slf4j;

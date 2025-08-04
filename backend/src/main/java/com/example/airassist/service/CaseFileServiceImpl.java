@@ -1,12 +1,11 @@
 package com.example.airassist.service;
 
-import com.example.airassist.dto.EligibilityRequest;
+import com.example.airassist.common.dto.EligibilityRequest;
 import com.example.airassist.persistence.dao.CaseFileRepository;
 import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.persistence.model.CaseFlights;
 import com.example.airassist.persistence.model.Flight;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.constraints.Max;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j

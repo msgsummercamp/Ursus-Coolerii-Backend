@@ -1,7 +1,7 @@
-package com.example.airassist.exceptions.handler;
+package com.example.airassist.common.exceptions.handler;
 
 
-import com.example.airassist.exceptions.*;
+import com.example.airassist.common.exceptions.*;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

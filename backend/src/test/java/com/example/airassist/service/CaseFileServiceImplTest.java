@@ -1,7 +1,7 @@
 package com.example.airassist.service;
 
 import com.example.airassist.common.Disruption;
-import com.example.airassist.dto.EligibilityRequest;
+import com.example.airassist.common.dto.EligibilityRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;

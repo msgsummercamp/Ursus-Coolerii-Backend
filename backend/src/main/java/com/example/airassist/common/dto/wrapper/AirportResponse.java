@@ -1,4 +1,4 @@
-package com.example.airassist.dto.wrapper;
+package com.example.airassist.common.dto.wrapper;
 
 import lombok.Data;
 import java.util.List;

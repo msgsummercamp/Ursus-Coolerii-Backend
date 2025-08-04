@@ -1,13 +1,12 @@
 package com.example.airassist.controller;
 
 import com.example.airassist.service.AuthService;
-import com.example.airassist.dto.LoginRequest;
-import com.example.airassist.dto.LoginResponse;
-import com.example.airassist.dto.SignupRequest;
-import com.example.airassist.dto.SignupResponse;
+import com.example.airassist.common.dto.LoginRequest;
+import com.example.airassist.common.dto.LoginResponse;
+import com.example.airassist.common.dto.SignupRequest;
+import com.example.airassist.common.dto.SignupResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

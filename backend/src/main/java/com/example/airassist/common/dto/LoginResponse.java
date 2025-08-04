@@ -1,7 +1,6 @@
-package com.example.airassist.dto;
+package com.example.airassist.common.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

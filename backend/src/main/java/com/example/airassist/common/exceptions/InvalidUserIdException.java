@@ -1,4 +1,4 @@
-package com.example.airassist.exceptions;
+package com.example.airassist.common.exceptions;
 
 import org.springframework.http.HttpStatus;
 

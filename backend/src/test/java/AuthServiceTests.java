@@ -1,0 +1,62 @@
+import com.example.airassist.common.dto.LoginRequest;
+import com.example.airassist.jwt.JwtTokenProvider;
+import com.example.airassist.persistence.dao.UserRepository;
+import com.example.airassist.service.AuthService;
+import com.example.airassist.service.AuthServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest(classes = com.example.airassist.Application.class)
+public class AuthServiceTests {
+    @MockitoBean
+    private AuthenticationManager authenticationManager;
+
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private UserRepository userRepository;
+
+    @Mock
+    private AuthService authService;
+
+    @MockitoBean
+    private PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    public void setUp() {
+        authService = new AuthServiceImpl(authenticationManager, jwtTokenProvider, userRepository, passwordEncoder);
+    }
+
+    @Test
+    void testLogin_Ok() {
+        Authentication fakeAuthentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user", "password")))
+                .thenReturn(fakeAuthentication);
+        when(jwtTokenProvider.generateToken(fakeAuthentication)).thenReturn("MockToken");
+        LoginRequest request = new LoginRequest("user", "password");
+        assertEquals("MockToken", authService.login(request).getToken());
+    }
+
+    @Test
+    void testLogin_BadCredentials() {
+        Authentication fakeAuthentication = mock(Authentication.class);
+        fakeAuthentication.setAuthenticated(false);
+        when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user", "password"))).thenReturn(fakeAuthentication);
+        when(jwtTokenProvider.generateToken(fakeAuthentication)).thenReturn(null);
+        LoginRequest request = new LoginRequest("user", "password");
+        assertNull(authService.login(request).getToken());
+    }
+
+
+}

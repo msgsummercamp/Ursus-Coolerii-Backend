@@ -1,4 +1,4 @@
-package com.example.airassist.dto;
+package com.example.airassist.common.dto;
 
 import com.example.airassist.common.Disruption;
 import lombok.Data;
@@ -11,3 +11,4 @@ public class EligibilityRequest {
     private Integer delayHours;
     private Boolean isVoluntarilyGivenUp;
 }
+

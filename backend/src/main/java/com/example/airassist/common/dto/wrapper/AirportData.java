@@ -1,6 +1,6 @@
-package com.example.airassist.dto.wrapper;
+package com.example.airassist.common.dto.wrapper;
 
-import com.example.airassist.dto.AirportAttributes;
+import com.example.airassist.common.dto.AirportAttributes;
 import lombok.Data;
 
 @Data
