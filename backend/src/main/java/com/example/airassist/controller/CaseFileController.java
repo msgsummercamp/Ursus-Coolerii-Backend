@@ -1,5 +1,6 @@
 package com.example.airassist.controller;
 
+import com.example.airassist.common.dto.CalculateRewardRequest;
 import com.example.airassist.common.dto.EligibilityRequest;
 import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.service.CaseFileService;
@@ -24,7 +25,7 @@ public class CaseFileController {
     }
 
     @PostMapping("/calculate-reward")
-    public int calculateCaseReward(@RequestBody CaseFile caseFile) {
-        return caseFileService.calculateCaseReward(caseFile);
+    public int calculateCaseReward(@RequestBody CalculateRewardRequest calculateRewardRequest) {
+        return caseFileService.calculateCaseReward(calculateRewardRequest);
     }
 }

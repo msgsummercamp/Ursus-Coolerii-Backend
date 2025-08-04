@@ -2,10 +2,12 @@ package com.example.airassist.service;
 
 import com.example.airassist.common.Disruption;
 import com.example.airassist.common.dto.EligibilityRequest;
+import com.example.airassist.persistence.dao.CaseFileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +18,7 @@ class CaseFileServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        caseFileService = new CaseFileServiceImpl(null);
+        caseFileService = new CaseFileServiceImpl(Mockito.mock(CaseFileRepository.class), Mockito.mock(AirportService.class));
     }
 
     @Nested
