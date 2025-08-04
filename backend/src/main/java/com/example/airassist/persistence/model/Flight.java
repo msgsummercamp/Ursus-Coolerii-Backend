@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.sql.Timestamp;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -15,8 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "flights")
 public class Flight {
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private @Id UUID flightId;
+    private @Id String flightId;
 
     @NotBlank(message = "Flight should have a flight number")
     private String flightNumber;
