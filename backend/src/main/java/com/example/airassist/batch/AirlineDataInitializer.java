@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 @Slf4j
 @AllArgsConstructor
-public class AirlineUpdateJob {
+public class AirlineDataInitializer {
     private final AirlineRepository airlineRepository;
 
     @PostConstruct
