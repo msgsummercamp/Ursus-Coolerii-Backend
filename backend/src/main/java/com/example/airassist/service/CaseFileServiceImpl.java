@@ -97,6 +97,10 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     public Boolean isEligible(EligibilityRequest eligibilityRequest) {
+        if (eligibilityRequest == null || eligibilityRequest.getDisruption() == null) {
+            return false;
+        }
+
         switch (eligibilityRequest.getDisruption()) {
             case CANCELLATION -> {
                 return isEligibleForCancellation(eligibilityRequest.getNoticeDays());
@@ -114,14 +118,14 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     private boolean isEligibleForCancellation( Integer noticeDays) {
-        return noticeDays < 14;
+        return noticeDays != null && noticeDays < 14;
     }
 
     private boolean isEligibleForDelay(Integer delayHours, Boolean arrived) {
-        return !arrived || delayHours > 3;
+        return (arrived != null && !arrived) || (delayHours != null && delayHours > 3);
     }
 
     private boolean isEligibleForDeniedBoarding( Boolean isVoluntarilyGivenUp) {
-        return !isVoluntarilyGivenUp;
+        return isVoluntarilyGivenUp != null && !isVoluntarilyGivenUp;
     }
 }
