@@ -6,9 +6,9 @@ import com.example.airassist.persistence.dao.CaseFileRepository;
 import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.redis.Airport;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,17 +18,30 @@ import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class CaseFileServiceImpl implements CaseFileService {
 
     private final CaseFileRepository caseFileRepository;
-    private final int MIN_REWARD = 250;
-    private final int MED_REWARD = 400;
-    private final int MAX_REWARD = 600;
-    private final int LOW_DISTANCE_THRESHOLD = 1500;
-    private final int HIGH_DISTANCE_THRESHOLD = 3000;
-
     private final AirportService airportService;
+
+    @Value("${MIN_REWARD}")
+    private int minReward;
+
+    @Value("${MED_REWARD}")
+    private int medReward;
+
+    @Value("${MAX_REWARD}")
+    private int maxReward;
+
+    @Value("${LOW_DISTANCE_THRESHOLD}")
+    private int lowDistanceThreshold;
+
+    @Value("${HIGH_DISTANCE_THRESHOLD}")
+    private int highDistanceThreshold;
+
+    public CaseFileServiceImpl(CaseFileRepository caseFileRepository, AirportService airportService) {
+        this.caseFileRepository = caseFileRepository;
+        this.airportService = airportService;
+    }
 
     @Override
     public List<CaseFile> findAllCaseFiles() {
@@ -56,11 +69,11 @@ public class CaseFileServiceImpl implements CaseFileService {
         }
         double distance = calculateDistance(departureAirport.getIata(), destinationAirport.getIata());
 
-        if (distance < LOW_DISTANCE_THRESHOLD)
-            return MIN_REWARD;
-        else if (distance < HIGH_DISTANCE_THRESHOLD)
-            return MED_REWARD;
-        else return MAX_REWARD;
+        if (distance < lowDistanceThreshold)
+            return minReward;
+        else if (distance < highDistanceThreshold)
+            return medReward;
+        else return maxReward;
     }
 
     private double calculateDistance(String departureAirport, String destinationAirport) {
