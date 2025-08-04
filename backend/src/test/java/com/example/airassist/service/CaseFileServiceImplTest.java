@@ -324,4 +324,68 @@ class CaseFileServiceImplTest {
             assertTrue(result);
         }
     }
+
+    @Nested
+    @DisplayName("Null Input Handling Service Tests")
+    class NullInputHandlingTests {
+
+        @Test
+        @DisplayName("Should return false when disruption is null")
+        void isEligible_NullDisruption_ShouldReturnFalse() {
+            EligibilityRequest request = new EligibilityRequest();
+            request.setDisruption(null);
+
+            assertFalse(caseFileService.isEligible(request));
+        }
+
+        @Test
+        @DisplayName("Should return false for cancellation with null noticeDays")
+        void isEligible_CancellationNullNoticeDays_ShouldReturnFalse() {
+            EligibilityRequest request = new EligibilityRequest();
+            request.setDisruption(Disruption.CANCELLATION);
+            request.setNoticeDays(null);
+
+            Boolean result = caseFileService.isEligible(request);
+
+            assertFalse(result);
+        }
+
+        @Test
+        @DisplayName("Should return false for delay with null delayHours")
+        void isEligible_DelayNullDelayHours_ShouldReturnFalse() {
+            EligibilityRequest request = new EligibilityRequest();
+            request.setDisruption(Disruption.DELAY);
+            request.setDelayHours(null);
+            request.setArrived(true);
+
+            Boolean result = caseFileService.isEligible(request);
+
+            assertFalse(result);
+        }
+
+        @Test
+        @DisplayName("Should return false for denied boarding with null voluntarily given up")
+        void isEligible_DeniedBoardingNullVoluntarilyGivenUp_ShouldReturnFalse() {
+            EligibilityRequest request = new EligibilityRequest();
+            request.setDisruption(Disruption.DENIED_BOARDING);
+            request.setIsVoluntarilyGivenUp(null);
+
+            Boolean result = caseFileService.isEligible(request);
+
+            assertFalse(result);
+        }
+
+        @Test
+        @DisplayName("Should return false for delay with both null delayHours and arrived")
+        void isEligible_DelayBothNull_ShouldReturnFalse() {
+            EligibilityRequest request = new EligibilityRequest();
+            request.setDisruption(Disruption.DELAY);
+            request.setDelayHours(null);
+            request.setArrived(null);
+
+            Boolean result = caseFileService.isEligible(request);
+
+            assertFalse(result);
+        }
+    }
 }
