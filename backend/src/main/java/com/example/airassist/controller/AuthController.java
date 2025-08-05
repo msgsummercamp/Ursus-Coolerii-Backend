@@ -36,17 +36,10 @@ public class AuthController {
     public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest){
         log.info("Signup request received : {}", signupRequest);
 
-        SignupResponse signupResponse = AuthService.signup(signupRequest);
-        log.info("Signed up  user: {}", signupResponse);
+        AuthService.signup(signupRequest);
+        log.info("Signed up  user: {}", signupRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(signupResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        AuthService.registerUserWithGeneratedPassword(email);
-        log.info("User with email {} has been registered with a random password", email);
-        return ResponseEntity.ok().build();
-    }
 }

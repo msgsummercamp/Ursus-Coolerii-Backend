@@ -56,17 +56,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public SignupResponse signup(SignupRequest signupRequest) {
+    public void signup(SignupRequest signupRequest) {
 
         log.info("Signup request received: {}", signupRequest);
 
         checkUserExists(signupRequest.getUsername(), signupRequest.getEmail());
 
-        User user = User.builder()
-                .password(passwordEncoder.encode(signupRequest.getPassword()))
-                .email(signupRequest.getEmail())
-                .role(new HashSet<>())
-                .build();
+        User user = createUserWithGeneratedPassword(signupRequest.getEmail());
 
         user =  Optional.ofNullable(userRepository.save(user)).orElseThrow(() ->{
             log.error("An unexpected error occurred while saving user");
@@ -75,24 +71,22 @@ public class AuthServiceImpl implements AuthService {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        signupRequest.getUsername(),
+                        signupRequest.getEmail(),
                         signupRequest.getPassword()
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtTokenProvider.generateToken(authentication);
         log.info("User {} saved and authenticated successfully", user.getEmail());
-        return new SignupResponse(token);
     }
 
-    @Override
-    public void registerUserWithGeneratedPassword(String email) {
+    private User createUserWithGeneratedPassword(String email) {
         String generatedPassword = UUID.randomUUID().toString().substring(0, 6);
-        User user = User.builder()
+        return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(generatedPassword))
                 .isFirstLogin(true)
+                .role(new HashSet<>())
                 .build();
-        userRepository.save(user);
     }
 }
