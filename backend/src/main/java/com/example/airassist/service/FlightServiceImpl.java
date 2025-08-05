@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,5 +27,14 @@ public class FlightServiceImpl implements FlightService {
         flight.setFlightId(flightId);
         flightRepository.save(flight);
         return Optional.of(flight);
+    }
+
+    @Override
+    public List<Flight> saveAll(List<Flight> flights) {
+        log.info("Saving flights: {}", flights.size());
+        return flights.stream().map(f -> save(f).orElseThrow(() ->{
+            log.error("Error saving flight: {}", f);
+            return new RuntimeException("Error saving flight " + f);
+        })).toList();
     }
 }

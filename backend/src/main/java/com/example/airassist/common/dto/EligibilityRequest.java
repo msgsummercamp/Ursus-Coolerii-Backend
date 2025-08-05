@@ -1,6 +1,6 @@
 package com.example.airassist.common.dto;
 
-import com.example.airassist.common.Disruption;
+import com.example.airassist.common.enums.Disruption;
 import lombok.Data;
 
 @Data

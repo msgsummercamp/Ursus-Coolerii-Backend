@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AirlineDataInitializer {
     private final AirlineRepository airlineRepository;
-
+/*
     @PostConstruct
     public void loadData(){
         try(Reader reader = new FileReader("../database/airlines_clean.csv")){
@@ -32,5 +32,5 @@ public class AirlineDataInitializer {
             log.error("Error loading airlines data: {}", e.getMessage());
             throw new RuntimeException("Failed to load airlines data", e);
         }
-    }
+    }*/
 }

@@ -4,9 +4,8 @@ import com.example.airassist.common.enums.CaseStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +14,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "cases")
+@ToString(exclude = {"caseFlights", "comments", "documents"})
 public class CaseFile {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,7 +27,10 @@ public class CaseFile {
 
     private CaseStatus status;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    private DisruptionDetails disruptionDetails;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

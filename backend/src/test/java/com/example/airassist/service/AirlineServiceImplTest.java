@@ -12,14 +12,14 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class AirlineServiceTest {
+public class AirlineServiceImplTest {
     private AirlineRepository airlineRepository;
-    private AirlineService airlineService;
+    private AirlineServiceImpl airlineService;
 
     @BeforeEach
     void setUp() {
         airlineRepository = mock(AirlineRepository.class);
-        airlineService = new AirlineService(airlineRepository);
+        airlineService = new AirlineServiceImpl(airlineRepository);
     }
 
     @Test
