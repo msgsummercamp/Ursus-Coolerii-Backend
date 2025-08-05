@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @Validated
@@ -38,5 +40,13 @@ public class AuthController {
         log.info("Signed up  user: {}", signupResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(signupResponse);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        AuthService.registerUserWithGeneratedPassword(email);
+        log.info("User with email {} has been registered with a random password", email);
+        return ResponseEntity.ok().build();
     }
 }

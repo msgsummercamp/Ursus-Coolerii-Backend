@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -82,5 +83,16 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtTokenProvider.generateToken(authentication);
         log.info("User {} saved and authenticated successfully", user.getEmail());
         return new SignupResponse(token);
+    }
+
+    @Override
+    public void registerUserWithGeneratedPassword(String email) {
+        String generatedPassword = UUID.randomUUID().toString().substring(0, 6);
+        User user = User.builder()
+                .email(email)
+                .password(passwordEncoder.encode(generatedPassword))
+                .isFirstLogin(true)
+                .build();
+        userRepository.save(user);
     }
 }

@@ -9,4 +9,5 @@ import com.example.airassist.common.dto.SignupResponse;
 public interface AuthService {
     LoginResponse login(LoginRequest loginRequest);
     SignupResponse signup(SignupRequest signupRequest);
+    void registerUserWithGeneratedPassword(String email);
 }

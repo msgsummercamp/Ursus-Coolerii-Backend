@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,14 +18,12 @@ import java.util.UUID;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository) {
         log.info("UserServiceImpl initialized");
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -148,18 +145,6 @@ public class UserServiceImpl implements UserService {
         });
         log.info("User patched successfully: {}", updatedUser);
         return Optional.of(updatedUser);
-    }
-
-    @Override
-    public User createUserWithRandomPassword(String email) {
-        String generatedPassword = UUID.randomUUID().toString().substring(0, 6);
-        User user = User.builder()
-                .email(email)
-                .password(passwordEncoder.encode(generatedPassword))
-                .isFirstLogin(true)
-                .build();
-        userRepository.save(user);
-        return user;
     }
 
     private void fillNullFieldsForPatch(User uncompleteUser, User completeUser){
