@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse login(LoginRequest loginRequest) {
       log.info("Log in request received: {}", loginRequest);
       Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-              loginRequest.getUsername(),
+              loginRequest.getEmail(),
               loginRequest.getPassword()
       ));
       SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Signup request received: {}", signupRequest);
 
-        checkUserExists(signupRequest.getUsername(), signupRequest.getEmail());
+        checkUserExists(signupRequest.getEmail(), signupRequest.getEmail());
 
         User user = createUserWithGeneratedPassword(signupRequest.getEmail());
 
@@ -69,15 +69,7 @@ public class AuthServiceImpl implements AuthService {
             return new UserSaveFailedException("An unexpected error occurred while saving user", HttpStatus.INTERNAL_SERVER_ERROR);
         });
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        signupRequest.getEmail(),
-                        signupRequest.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.generateToken(authentication);
-        log.info("User {} saved and authenticated successfully", user.getEmail());
+        log.info("User {} saved successfully", user.getEmail());
     }
 
     private User createUserWithGeneratedPassword(String email) {
