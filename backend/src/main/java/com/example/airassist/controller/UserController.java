@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -115,6 +116,14 @@ public class UserController {
         log.info("Deleted user with ID: {} successfully!", id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
+    }
+
+    @PostMapping("/register-auto")
+    public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload){
+        String email = payload.get("email");
+        userService.createUserWithRandomPassword(email);
+        log.info("User with email {} has been registered with a random password", email);
+        return ResponseEntity.ok().build();
     }
 }
 

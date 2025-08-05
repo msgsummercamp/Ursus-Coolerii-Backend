@@ -15,4 +15,5 @@ public interface UserService {
     Optional<User> findById(UUID id);
     Optional<User> update(User user);
     Optional<User> patch(User user);
+    public User createUserWithRandomPassword(String email);
 }
