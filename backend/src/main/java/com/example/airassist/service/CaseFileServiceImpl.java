@@ -1,14 +1,14 @@
 package com.example.airassist.service;
 
+import com.example.airassist.common.dto.CalculateRewardRequest;
 import com.example.airassist.common.dto.EligibilityRequest;
 import com.example.airassist.persistence.dao.CaseFileRepository;
 import com.example.airassist.persistence.model.CaseFile;
-import com.example.airassist.persistence.model.CaseFlights;
-import com.example.airassist.persistence.model.Flight;
+import com.example.airassist.redis.Airport;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,15 +18,30 @@ import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class CaseFileServiceImpl implements CaseFileService {
 
     private final CaseFileRepository caseFileRepository;
-    private final int MIN_REWARD = 250;
-    private final int MED_REWARD = 400;
-    private final int MAX_REWARD = 600;
-    private final int LOW_DISTANCE_THRESHOLD = 1500;
-    private final int HIGH_DISTANCE_THRESHOLD = 3000;
+    private final AirportService airportService;
+
+    @Value("${MIN_REWARD}")
+    private int minReward;
+
+    @Value("${MED_REWARD}")
+    private int medReward;
+
+    @Value("${MAX_REWARD}")
+    private int maxReward;
+
+    @Value("${LOW_DISTANCE_THRESHOLD}")
+    private int lowDistanceThreshold;
+
+    @Value("${HIGH_DISTANCE_THRESHOLD}")
+    private int highDistanceThreshold;
+
+    public CaseFileServiceImpl(CaseFileRepository caseFileRepository, AirportService airportService) {
+        this.caseFileRepository = caseFileRepository;
+        this.airportService = airportService;
+    }
 
     @Override
     public List<CaseFile> findAllCaseFiles() {
@@ -34,40 +49,34 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     @Override
-    public int calculateCaseReward(CaseFile caseFile) {
-        if (caseFile == null || caseFile.getCaseFlights() == null || caseFile.getCaseFlights().isEmpty()) {
+    public int calculateCaseReward(CalculateRewardRequest calculateRewardRequest) {
+        if (calculateRewardRequest == null || calculateRewardRequest.getDepartureAirport() == null || calculateRewardRequest.getDestinationAirport() == null) {
             log.warn("CaseFile or its flights are null or empty");
             return 0;
         }
 
-        CaseFlights firstFlight = caseFile.getCaseFlights().stream()
-                .filter(CaseFlights::isFirst)
-                .findFirst()
-                .orElse(null);
+        Airport departureAirport = airportService.getAllAirports().stream()
+                .filter(airport -> airport.getName().equals(calculateRewardRequest.getDepartureAirport()))
+                .findFirst().orElse(null);
+        Airport destinationAirport = airportService.getAllAirports().stream()
+                .filter(airport -> airport.getName().equals(calculateRewardRequest.getDestinationAirport()))
+                .findFirst().orElse(null);
 
-        CaseFlights lastFlight = caseFile.getCaseFlights().stream()
-                .filter(CaseFlights::isLast)
-                .findFirst()
-                .orElse(null);
-
-        if (firstFlight == null || lastFlight == null) {
-            log.warn("First or last flight not found in CaseFile");
+        if(departureAirport == null || destinationAirport == null ||
+                departureAirport.getIata() == null || destinationAirport.getIata() == null) {
+            log.warn("Departure or destination airport not found in Redis");
             return 0;
         }
+        double distance = calculateDistance(departureAirport.getIata(), destinationAirport.getIata());
 
-        Flight departure = firstFlight.getFlight();
-        Flight arrival = lastFlight.getFlight();
-        double distance = calculateDistance(departure.getDepartureAirport(), arrival.getDestinationAirport());
-
-        if (distance < LOW_DISTANCE_THRESHOLD)
-            return MIN_REWARD;
-        else if (distance < HIGH_DISTANCE_THRESHOLD)
-            return MED_REWARD;
-        else return MAX_REWARD;
+        if (distance < lowDistanceThreshold)
+            return minReward;
+        else if (distance < highDistanceThreshold)
+            return medReward;
+        else return maxReward;
     }
 
-    @Override
-    public double calculateDistance(String departureAirport, String destinationAirport) {
+    private double calculateDistance(String departureAirport, String destinationAirport) {
         try {
             String body = "from=" + departureAirport + "&to=" + destinationAirport;
             HttpRequest request = HttpRequest.newBuilder()
