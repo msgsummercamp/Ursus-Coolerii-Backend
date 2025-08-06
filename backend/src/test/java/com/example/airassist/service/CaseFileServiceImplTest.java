@@ -14,8 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -443,7 +445,7 @@ class CaseFileServiceImplTest {
             when(caseFileRepository.save(any(CaseFile.class))).thenReturn(caseFile);
             when(flightService.saveAll(anyList())).thenReturn(List.of(flight));
             when(caseFlightRepository.saveAll(anyList())).thenReturn(List.of(caseFlights));
-            CaseFile result = caseFileService.saveCase(saveCaseRequest);
+            CaseFile result = caseFileService.saveCase(saveCaseRequest, List.of());
 
             assertNotNull(result);
             assertEquals(passenger, result.getPassenger());

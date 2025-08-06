@@ -17,11 +17,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +73,7 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     @Override
+    @Transactional
     public List<CaseFile> findAllCaseFiles() {
         return caseFileRepository.findAll();
     }
@@ -103,7 +108,7 @@ public class CaseFileServiceImpl implements CaseFileService {
 
     @Override
     @Transactional
-    public CaseFile saveCase(SaveCaseRequest saveCaseRequest) {
+    public CaseFile saveCase(SaveCaseRequest saveCaseRequest, List<MultipartFile> uploadedDocuments) {
         User creatorUser = userService.findByEmail(saveCaseRequest.getUserEmail()).orElseThrow(() ->
                 new UserNotFoundException("User with email " + saveCaseRequest.getUserEmail() + " not found", HttpStatus.NOT_FOUND));
         Passenger passenger = passengerRepository.save(saveCaseRequest.getPassenger());
@@ -115,7 +120,12 @@ public class CaseFileServiceImpl implements CaseFileService {
                 .status(CaseStatus.NOT_ASSIGNED)
                 .build();
 
+        List<Document> documents = toDocument(uploadedDocuments);
+        CaseFile finalCaseFileToSave1 = caseFileToSave;
+        documents.forEach(document -> document.setCaseFile(finalCaseFileToSave1));
+        caseFileToSave.setDocuments(documents);
         caseFileToSave = caseFileRepository.save(caseFileToSave);
+
 
         List<CaseFlights> caseFlights = getCaseFlights(caseFileToSave, saveCaseRequest.getFlights());
         CaseFile finalCaseFileToSave = caseFileToSave;
@@ -127,8 +137,21 @@ public class CaseFileServiceImpl implements CaseFileService {
         caseFlightRepository.saveAll(caseFlights);
         caseFileToSave.setCaseFlights(caseFlights);
 
-
         return caseFileToSave;
+    }
+
+    private Document toDocument(MultipartFile file) {
+        try {
+            return  Document.builder().content(file.getBytes()).build();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read file: " + file.getOriginalFilename(), e);
+        }
+    }
+
+    private List<Document> toDocument(List<MultipartFile> files){
+        return files.stream()
+                .map(this::toDocument)
+                .toList();
     }
 
     private List<CaseFlights> getCaseFlights(CaseFile caseFileToSave, List<FlightSaveDTO> flightsFromRequest) {

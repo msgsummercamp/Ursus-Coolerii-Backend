@@ -50,7 +50,7 @@ public class CaseFile {
     @JsonManagedReference
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "caseFile")
+    @OneToMany(mappedBy = "caseFile", cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private List<Document> documents;
 }
