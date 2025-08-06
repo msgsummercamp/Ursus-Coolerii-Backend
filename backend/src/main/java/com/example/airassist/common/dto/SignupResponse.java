@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignupResponse {
     private String token;
+    private String firstName;
+    private String lastName;
 }

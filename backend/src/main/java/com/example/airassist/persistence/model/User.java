@@ -25,6 +25,12 @@ public class User {
     @NotBlank(message = "User should have a password")
     private String password;
 
+    @NotBlank(message = "User should have a first name")
+    private String firstName;
+
+    @NotBlank(message = "User should have a last name")
+    private String lastName;
+
     private boolean isFirstLogin;
 
     @ManyToMany(fetch = FetchType.EAGER)
