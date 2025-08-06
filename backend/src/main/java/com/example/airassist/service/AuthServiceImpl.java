@@ -47,11 +47,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    private void checkUserExists(String username, String email) throws UserAlreadyExistsException {
+    private void checkUserExists(String email) throws UserAlreadyExistsException {
         if(userRepository.findByEmail(email).isPresent()
         ){
-            log.warn("User with username {} or email {}  already exists in DB", username, email);
-            throw new UserAlreadyExistsException("User with username " +  username + "or email "+
+            log.warn("User with email {}  already exists in DB", email);
+            throw new UserAlreadyExistsException("User with email "+
                     email + " already exists in DB", HttpStatus.CONFLICT);        }
     }
 
@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Signup request received: {}", signupRequest);
 
-        checkUserExists(signupRequest.getEmail(), signupRequest.getEmail());
+        checkUserExists(signupRequest.getEmail());
 
         User user = createUserWithGeneratedPassword(signupRequest.getEmail(), signupRequest.getFirstName(), signupRequest.getLastName());
 
