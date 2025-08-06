@@ -57,5 +57,4 @@ public class UserServiceTests {
         assertEquals(Optional.empty(), userService.findById(id));
     }
 
-
 }
