@@ -74,6 +74,18 @@ public class AuthServiceImpl implements AuthService {
 
     private User createUserWithGeneratedPassword(String email, String firstName, String lastName) {
         String generatedPassword = UUID.randomUUID().toString().substring(0, 6);
+        if(email == null || email.isEmpty()) {
+            log.error("Email cannot be null or empty");
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        if(firstName == null || firstName.isEmpty()) {
+            log.error("First name cannot be null or empty");
+            throw new IllegalArgumentException("First name cannot be null or empty");
+        }
+        if(lastName == null || lastName.isEmpty()) {
+            log.error("Last name cannot be null or empty");
+            throw new IllegalArgumentException("Last name cannot be null or empty");
+        }
         return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(generatedPassword))
