@@ -17,6 +17,7 @@ import java.util.List;
 public class AirlineDataInitializer {
     private final AirlineRepository airlineRepository;
 
+
   //  @PostConstruct
     public void loadData(){
         try(Reader reader = new FileReader("../database/airlines_clean.csv")){

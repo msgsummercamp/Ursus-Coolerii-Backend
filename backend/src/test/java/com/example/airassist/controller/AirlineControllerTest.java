@@ -1,7 +1,7 @@
 package com.example.airassist.controller;
 
 import com.example.airassist.persistence.model.Airline;
-import com.example.airassist.service.AirlineService;
+import com.example.airassist.service.AirlineServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 @AutoConfigureMockMvc
 public class AirlineControllerTest {
     @Mock
-    private AirlineService airlineService;
+    private AirlineServiceImpl airlineService;
 
     private AirlineController airlineController;
 

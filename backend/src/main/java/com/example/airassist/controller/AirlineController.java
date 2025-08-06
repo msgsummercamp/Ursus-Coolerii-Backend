@@ -1,7 +1,7 @@
 package com.example.airassist.controller;
 
 import com.example.airassist.persistence.model.Airline;
-import com.example.airassist.service.AirlineService;
+import com.example.airassist.service.AirlineServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api/airlines")
 public class AirlineController {
-    private final AirlineService airlineService;
+    private final AirlineServiceImpl airlineService;
 
     @RequestMapping
     public List<Airline> getAllAirlines() {

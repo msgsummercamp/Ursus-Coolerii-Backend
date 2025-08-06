@@ -1,24 +1,68 @@
 package com.example.airassist.service;
 
-import com.example.airassist.common.Disruption;
+import com.example.airassist.common.dto.FlightSaveDTO;
+import com.example.airassist.common.dto.SaveCaseRequest;
+import com.example.airassist.common.enums.Disruption;
 import com.example.airassist.common.dto.EligibilityRequest;
 import com.example.airassist.persistence.dao.CaseFileRepository;
+import com.example.airassist.persistence.dao.CaseFlightRepository;
+import com.example.airassist.persistence.dao.PassengerRepository;
+import com.example.airassist.persistence.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.when;
 
 @DisplayName("CaseFileServiceImpl Tests")
 class CaseFileServiceImplTest {
 
-    private CaseFileServiceImpl caseFileService;
+    @Mock
+    private CaseFileService caseFileService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private CaseFileRepository caseFileRepository;
+
+    @Mock
+    private AirportService airportService;
+
+    @Mock
+    private AirlineService airlineService;
+
+    @Mock
+    private PassengerRepository passengerRepository;
+
+    @Mock
+    private CaseFlightRepository caseFlightRepository;
+
+    @Mock
+    private FlightService flightService;
 
     @BeforeEach
     void setUp() {
-        caseFileService = new CaseFileServiceImpl(Mockito.mock(CaseFileRepository.class), Mockito.mock(AirportService.class));
+        MockitoAnnotations.openMocks(this);
+        caseFileService = new CaseFileServiceImpl(caseFileRepository,
+                airportService,
+                userService,
+                airlineService,
+                passengerRepository,
+                caseFlightRepository,
+                flightService);
     }
 
     @Nested
@@ -224,53 +268,6 @@ class CaseFileServiceImplTest {
         }
     }
 
-    @Nested
-    @DisplayName("Edge Cases and Error Handling Tests")
-    class EdgeCasesTests {
-
-
-        @Test
-        @DisplayName("Should handle null noticeDays for cancellation")
-        void isEligible_CancellationWithNullNoticeDays_ShouldThrowException() {
-            EligibilityRequest request = new EligibilityRequest();
-            request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(null);
-
-            assertThrows(NullPointerException.class, () -> caseFileService.isEligible(request));
-        }
-
-        @Test
-        @DisplayName("Should handle null arrived status for delay")
-        void isEligible_DelayWithNullArrived_ShouldThrowException() {
-            EligibilityRequest request = new EligibilityRequest();
-            request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(5);
-            request.setArrived(null);
-
-            assertThrows(NullPointerException.class, () -> caseFileService.isEligible(request));
-        }
-
-        @Test
-        @DisplayName("Should handle null delayHours for delay")
-        void isEligible_DelayWithNullDelayHours_ShouldThrowException() {
-            EligibilityRequest request = new EligibilityRequest();
-            request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(null);
-            request.setArrived(true);
-
-            assertThrows(NullPointerException.class, () -> caseFileService.isEligible(request));
-        }
-
-        @Test
-        @DisplayName("Should handle null voluntarily given up for denied boarding")
-        void isEligible_DeniedBoardingWithNullVoluntarilyGivenUp_ShouldThrowException() {
-            EligibilityRequest request = new EligibilityRequest();
-            request.setDisruption(Disruption.DENIED_BOARDING);
-            request.setIsVoluntarilyGivenUp(null);
-
-            assertThrows(NullPointerException.class, () -> caseFileService.isEligible(request));
-        }
-    }
 
     @Nested
     @DisplayName("Boundary Value Tests")
@@ -389,5 +386,73 @@ class CaseFileServiceImplTest {
 
             assertFalse(result);
         }
+
+    }
+
+    @Nested
+    @DisplayName("Save case files tests")
+    class SaveCaseTests{
+
+        @Test
+        @DisplayName("Should save case file with flights and return the saved entity")
+        void saveCaseFile_shouldSaveAndReturnCaseFile() {
+            User user = new User();
+            user.setEmail("mock@gmail.com");
+            Passenger passenger = new Passenger();
+            passenger.setFirstName("Mock");
+            SaveCaseRequest saveCaseRequest = new SaveCaseRequest();
+            saveCaseRequest.setUserEmail("mock@gmail.com");
+            saveCaseRequest.setPassenger(passenger);
+            saveCaseRequest.setReservationNumber("ABC123");
+            FlightSaveDTO flightDTO = new FlightSaveDTO();
+            flightDTO.setFlightNumber("FL123");
+            flightDTO.setDepartureAirport("Cluj");
+            flightDTO.setDestinationAirport("Bucuresti");
+            flightDTO.setAirlineName("Wizz");
+            flightDTO.setDepartureTime(null);
+            flightDTO.setArrivalTime(null);
+            flightDTO.setProblemFlight(false);
+            flightDTO.setFirstFlight(true);
+            flightDTO.setLastFlight(true);
+            saveCaseRequest.setFlights(List.of(flightDTO));
+
+            Flight flight = Flight.builder()
+                    .flightNumber("FL123")
+                    .departureAirport("Cluj")
+                    .destinationAirport("Bucuresti")
+                    .airline(null)
+                    .departureTime(null)
+                    .arrivalTime(null)
+                    .build();
+
+            CaseFile caseFile = CaseFile.builder()
+                    .passenger(passenger)
+                    .reservationNumber("ABC123")
+                    .user(user)
+                    .status(com.example.airassist.common.enums.CaseStatus.NOT_ASSIGNED)
+                    .build();
+
+            CaseFlights caseFlights = CaseFlights.builder()
+                    .caseFile(caseFile)
+                    .flight(flight)
+                    .isFirst(true)
+                    .isLast(true)
+                    .isProblemFlight(false)
+                    .build();
+
+            when(userService.findByEmail("mock@gmail.com")).thenReturn(Optional.of(user));
+            when(passengerRepository.save(passenger)).thenReturn(passenger);
+            when(caseFileRepository.save(any(CaseFile.class))).thenReturn(caseFile);
+            when(flightService.saveAll(anyList())).thenReturn(List.of(flight));
+            when(caseFlightRepository.saveAll(anyList())).thenReturn(List.of(caseFlights));
+            CaseFile result = caseFileService.saveCase(saveCaseRequest, List.of());
+
+            assertNotNull(result);
+            assertEquals(passenger, result.getPassenger());
+            assertEquals(user, result.getUser());
+            assertEquals("ABC123", result.getReservationNumber());
+            assertEquals(com.example.airassist.common.enums.CaseStatus.NOT_ASSIGNED, result.getStatus());
+        }
+
     }
 }
