@@ -39,7 +39,8 @@ public class AuthController {
         AuthService.signup(signupRequest);
         log.info("Signed up  user: {}", signupRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        SignupResponse response = new SignupResponse(null, signupRequest.getFirstName(), signupRequest.getLastName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 }

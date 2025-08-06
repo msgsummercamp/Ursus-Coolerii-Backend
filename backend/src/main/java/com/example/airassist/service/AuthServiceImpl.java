@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
         checkUserExists(signupRequest.getEmail(), signupRequest.getEmail());
 
-        User user = createUserWithGeneratedPassword(signupRequest.getEmail());
+        User user = createUserWithGeneratedPassword(signupRequest.getEmail(), signupRequest.getFirstName(), signupRequest.getLastName());
 
         user =  Optional.ofNullable(userRepository.save(user)).orElseThrow(() ->{
             log.error("An unexpected error occurred while saving user");
@@ -72,11 +72,13 @@ public class AuthServiceImpl implements AuthService {
         log.info("User {} saved successfully", user.getEmail());
     }
 
-    private User createUserWithGeneratedPassword(String email) {
+    private User createUserWithGeneratedPassword(String email, String firstName, String lastName) {
         String generatedPassword = UUID.randomUUID().toString().substring(0, 6);
         return User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(generatedPassword))
+                .firstName(firstName)
+                .lastName(lastName)
                 .isFirstLogin(true)
                 .role(new HashSet<>())
                 .build();
