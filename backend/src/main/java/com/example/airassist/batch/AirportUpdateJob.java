@@ -71,14 +71,7 @@ public class AirportUpdateJob {
                 .map(data ->Airport.builder()
                         .id(data.getId())
                         .name(data.getAttributes().getName())
-                        .city(data.getAttributes().getCity())
-                        .country(data.getAttributes().getCountry())
-                        .icao(data.getAttributes().getIcao())
                         .iata(data.getAttributes().getIata())
-                        .latitude(data.getAttributes().getLatitude())
-                        .longitude(data.getAttributes().getLongitude())
-                        .altitude(data.getAttributes().getAltitude())
-                        .timezone(data.getAttributes().getTimezone())
                         .build()).toList();
     }
 }
