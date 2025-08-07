@@ -4,11 +4,14 @@ import com.example.airassist.common.enums.CaseStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.UUID;
-
+import lombok.Builder;
+import lombok.ToString;
+import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
@@ -21,6 +24,8 @@ public class CaseFile {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID caseId;
+
+    private Timestamp caseDate;
 
     @NotBlank(message = "The case should contain the reservation number")
     private String reservationNumber;
