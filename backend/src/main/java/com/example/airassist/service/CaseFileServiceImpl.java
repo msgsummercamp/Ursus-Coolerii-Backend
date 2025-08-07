@@ -1,9 +1,6 @@
 package com.example.airassist.service;
 
-import com.example.airassist.common.dto.CalculateRewardRequest;
-import com.example.airassist.common.dto.EligibilityRequest;
-import com.example.airassist.common.dto.FlightSaveDTO;
-import com.example.airassist.common.dto.SaveCaseRequest;
+import com.example.airassist.common.dto.*;
 import com.example.airassist.common.enums.CaseStatus;
 import com.example.airassist.common.exceptions.UserNotFoundException;
 import com.example.airassist.persistence.dao.CaseFileRepository;
@@ -24,8 +21,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,15 +103,15 @@ public class CaseFileServiceImpl implements CaseFileService {
 
     @Override
     @Transactional
-    public CaseFile saveCase(SaveCaseRequest saveCaseRequest, List<MultipartFile> uploadedDocuments) {
-        User creatorUser = userService.findByEmail(saveCaseRequest.getUserEmail()).orElseThrow(() ->
-                new UserNotFoundException("User with email " + saveCaseRequest.getUserEmail() + " not found", HttpStatus.NOT_FOUND));
-        Passenger passenger = saveCaseRequest.getPassenger();
+    public CaseFile saveCase(CaseRequest saveRequest, List<MultipartFile> uploadedDocuments) {
+        User creatorUser = userService.findByEmail(saveRequest.getUserEmail()).orElseThrow(() ->
+                new UserNotFoundException("User with email " + saveRequest.getUserEmail() + " not found", HttpStatus.NOT_FOUND));
+        Passenger passenger = saveRequest.getPassenger();
         CaseFile caseFileToSave = CaseFile.builder()
                 .passenger(passenger)
-                .reservationNumber(saveCaseRequest.getReservationNumber())
+                .reservationNumber(saveRequest.getReservationNumber())
                 .user(creatorUser)
-                .disruptionDetails(saveCaseRequest.getDisruptionDetails())
+                .disruptionDetails(saveRequest.getDisruptionDetails())
                 .status(CaseStatus.NOT_ASSIGNED)
                 .build();
 
@@ -127,7 +122,7 @@ public class CaseFileServiceImpl implements CaseFileService {
         caseFileToSave = caseFileRepository.save(caseFileToSave);
 
 
-        List<CaseFlights> caseFlights = getCaseFlights(caseFileToSave, saveCaseRequest.getFlights());
+        List<CaseFlights> caseFlights = getCaseFlights(caseFileToSave, saveRequest.getFlights());
         CaseFile finalCaseFileToSave = caseFileToSave;
 
         caseFlights.forEach(c -> {
