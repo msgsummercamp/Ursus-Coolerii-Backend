@@ -111,7 +111,7 @@ public class CaseFileServiceImpl implements CaseFileService {
     public CaseFile saveCase(SaveCaseRequest saveCaseRequest, List<MultipartFile> uploadedDocuments) {
         User creatorUser = userService.findByEmail(saveCaseRequest.getUserEmail()).orElseThrow(() ->
                 new UserNotFoundException("User with email " + saveCaseRequest.getUserEmail() + " not found", HttpStatus.NOT_FOUND));
-        Passenger passenger = passengerRepository.save(saveCaseRequest.getPassenger());
+        Passenger passenger = saveCaseRequest.getPassenger();
         CaseFile caseFileToSave = CaseFile.builder()
                 .passenger(passenger)
                 .reservationNumber(saveCaseRequest.getReservationNumber())

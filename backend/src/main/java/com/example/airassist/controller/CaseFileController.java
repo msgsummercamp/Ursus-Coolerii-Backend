@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,7 @@ import java.util.Arrays;
 @RequestMapping("/api/case-files")
 @AllArgsConstructor
 @Slf4j
+@Validated
 public class CaseFileController {
     public final CaseFileService caseFileService;
 
@@ -44,6 +46,6 @@ public class CaseFileController {
         log.info("Save case request received: {}", saveCaseRequest);
         CaseFile savedCaseFile =  caseFileService.saveCase(saveCaseRequest, Arrays.asList(uploadedDocuments));
         log.info("Save case successfully: {}", savedCaseFile);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCaseFile);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
