@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,9 @@ public class CaseFile {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID caseId;
+
+    @NotBlank(message = "The case should contain a date")
+    private Timestamp caseDate;
 
     @NotBlank(message = "The case should contain the reservation number")
     private String reservationNumber;

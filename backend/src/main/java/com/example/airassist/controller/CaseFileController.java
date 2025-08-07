@@ -1,6 +1,7 @@
 package com.example.airassist.controller;
 
 import com.example.airassist.common.dto.CalculateRewardRequest;
+import com.example.airassist.common.dto.CaseFileSummaryDTO;
 import com.example.airassist.common.dto.EligibilityRequest;
 import com.example.airassist.common.dto.SaveCaseRequest;
 import com.example.airassist.persistence.model.CaseFile;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/case-files")
@@ -47,5 +49,11 @@ public class CaseFileController {
         CaseFile savedCaseFile =  caseFileService.saveCase(saveCaseRequest, Arrays.asList(uploadedDocuments));
         log.info("Save case successfully: {}", savedCaseFile);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/cases")
+    public ResponseEntity<List<CaseFileSummaryDTO>> getAllCases() {
+        List<CaseFileSummaryDTO> cases = caseFileService.getAllCaseSummaries();
+        return ResponseEntity.ok(cases);
     }
 }

@@ -1,9 +1,6 @@
 package com.example.airassist.service;
 
-import com.example.airassist.common.dto.CalculateRewardRequest;
-import com.example.airassist.common.dto.EligibilityRequest;
-import com.example.airassist.common.dto.FlightSaveDTO;
-import com.example.airassist.common.dto.SaveCaseRequest;
+import com.example.airassist.common.dto.*;
 import com.example.airassist.common.enums.CaseStatus;
 import com.example.airassist.common.exceptions.UserNotFoundException;
 import com.example.airassist.persistence.dao.CaseFileRepository;
@@ -244,5 +241,38 @@ public class CaseFileServiceImpl implements CaseFileService {
 
     private boolean isEligibleForDeniedBoarding( Boolean isVoluntarilyGivenUp) {
         return isVoluntarilyGivenUp != null && !isVoluntarilyGivenUp;
+    }
+
+    @Override
+    public List<CaseFileSummaryDTO> getAllCaseSummaries() {
+        List<CaseFile> cases = caseFileRepository.findAll();
+        return cases.stream().map(this::mapCaseFileToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private CaseFileSummaryDTO mapCaseFileToDTO(CaseFile caseFile) {
+        CaseFileSummaryDTO caseFileSummaryDTO = new CaseFileSummaryDTO();
+        caseFileSummaryDTO.setCaseId(caseFile.getCaseId());
+        caseFileSummaryDTO.setCaseDate(caseFile.getCaseDate());
+        CaseFlights caseFlight = caseFile.getCaseFlights().stream().filter(CaseFlights::isProblemFlight).findFirst().orElse(null);
+        if (caseFlight != null) {
+            caseFileSummaryDTO.setFlightNumber(caseFlight.getFlight().getFlightNumber());
+            caseFileSummaryDTO.setFlightDepartureDate(caseFlight.getFlight().getDepartureTime());
+            caseFileSummaryDTO.setFlightArrivalDate(caseFlight.getFlight().getArrivalTime());
+        }
+        Passenger passenger = caseFile.getPassenger();
+        String passengerName = (passenger.getFirstName() != null ? passenger.getFirstName() : "") +
+                " " +
+                (passenger.getLastName() != null ? passenger.getLastName() : "");
+        caseFileSummaryDTO.setPassengerName(passengerName.trim());
+        caseFileSummaryDTO.setStatus(caseFile.getStatus());
+        User employee = caseFile.getEmployee();
+        String employeeName = (employee != null ?
+                ((employee.getFirstName() != null ? employee.getFirstName() : "") +
+                        " " +
+                        (employee.getLastName() != null ? employee.getLastName() : "")).trim()
+                : null);
+        caseFileSummaryDTO.setEmployeeName(employeeName);
+        return caseFileSummaryDTO;
     }
 }
