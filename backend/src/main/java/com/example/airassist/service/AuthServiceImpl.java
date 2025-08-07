@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -36,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse login(LoginRequest loginRequest) {
       log.info("Log in request received: {}", loginRequest);
       Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-              loginRequest.getUsername(),
+              loginRequest.getEmail(),
               loginRequest.getPassword()
       ));
       SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -46,41 +47,52 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    private void checkUserExists(String username, String email) throws UserAlreadyExistsException {
+    private void checkUserExists(String email) throws UserAlreadyExistsException {
         if(userRepository.findByEmail(email).isPresent()
         ){
-            log.warn("User with username {} or email {}  already exists in DB", username, email);
-            throw new UserAlreadyExistsException("User with username " +  username + "or email "+
+            log.warn("User with email {}  already exists in DB", email);
+            throw new UserAlreadyExistsException("User with email "+
                     email + " already exists in DB", HttpStatus.CONFLICT);        }
     }
 
     @Override
-    public SignupResponse signup(SignupRequest signupRequest) {
+    public void signup(SignupRequest signupRequest) {
 
         log.info("Signup request received: {}", signupRequest);
 
-        checkUserExists(signupRequest.getUsername(), signupRequest.getEmail());
+        checkUserExists(signupRequest.getEmail());
 
-        User user = User.builder()
-                .password(passwordEncoder.encode(signupRequest.getPassword()))
-                .email(signupRequest.getEmail())
-                .role(new HashSet<>())
-                .build();
+        User user = createUserWithGeneratedPassword(signupRequest.getEmail(), signupRequest.getFirstName(), signupRequest.getLastName());
 
         user =  Optional.ofNullable(userRepository.save(user)).orElseThrow(() ->{
             log.error("An unexpected error occurred while saving user");
             return new UserSaveFailedException("An unexpected error occurred while saving user", HttpStatus.INTERNAL_SERVER_ERROR);
         });
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        signupRequest.getUsername(),
-                        signupRequest.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.generateToken(authentication);
-        log.info("User {} saved and authenticated successfully", user.getEmail());
-        return new SignupResponse(token);
+        log.info("User {} saved successfully", user.getEmail());
+    }
+
+    private User createUserWithGeneratedPassword(String email, String firstName, String lastName) {
+        String generatedPassword = UUID.randomUUID().toString().substring(0, 6);
+        if(email == null || email.isEmpty()) {
+            log.error("Email cannot be null or empty");
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        if(firstName == null || firstName.isEmpty()) {
+            log.error("First name cannot be null or empty");
+            throw new IllegalArgumentException("First name cannot be null or empty");
+        }
+        if(lastName == null || lastName.isEmpty()) {
+            log.error("Last name cannot be null or empty");
+            throw new IllegalArgumentException("Last name cannot be null or empty");
+        }
+        return User.builder()
+                .email(email)
+                .password(passwordEncoder.encode(generatedPassword))
+                .firstName(firstName)
+                .lastName(lastName)
+                .isFirstLogin(true)
+                .role(new HashSet<>())
+                .build();
     }
 }

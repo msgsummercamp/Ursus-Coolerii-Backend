@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @Validated
@@ -34,9 +36,11 @@ public class AuthController {
     public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest){
         log.info("Signup request received : {}", signupRequest);
 
-        SignupResponse signupResponse = AuthService.signup(signupRequest);
-        log.info("Signed up  user: {}", signupResponse);
+        AuthService.signup(signupRequest);
+        log.info("Signed up  user: {}", signupRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(signupResponse);
+        SignupResponse response = new SignupResponse(null, signupRequest.getFirstName(), signupRequest.getLastName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }
