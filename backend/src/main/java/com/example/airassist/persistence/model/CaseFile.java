@@ -9,7 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.UUID;
-
+import lombok.Builder;
+import lombok.ToString;
+import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +25,6 @@ public class CaseFile {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID caseId;
 
-    @NotBlank(message = "The case should contain a date")
     private Timestamp caseDate;
 
     @NotBlank(message = "The case should contain the reservation number")

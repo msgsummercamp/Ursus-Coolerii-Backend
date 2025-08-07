@@ -31,10 +31,6 @@ public class CaseFileController {
         return ResponseEntity.ok(caseFileService.isEligible(eligibilityRequest));
     }
 
-    @GetMapping()
-    public Iterable<CaseFile> getAllCaseFiles() {
-        return caseFileService.findAllCaseFiles();
-    }
 
     @PostMapping("/calculate-reward")
     public int calculateCaseReward(@RequestBody CalculateRewardRequest calculateRewardRequest) {
@@ -51,9 +47,11 @@ public class CaseFileController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/cases")
+    @GetMapping
     public ResponseEntity<List<CaseFileSummaryDTO>> getAllCases() {
+        log.info("Get all cases request received");
         List<CaseFileSummaryDTO> cases = caseFileService.getAllCaseSummaries();
+        log.info("Get all cases response, count {}", cases.size());
         return ResponseEntity.ok(cases);
     }
 }

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -13,10 +12,10 @@ import java.util.UUID;
 public class CaseFileSummaryDTO {
     private UUID caseId;
     private Timestamp caseDate;
-    private String flightNumber;
+    private String flightNr;
     private Timestamp flightDepartureDate;
     private Timestamp flightArrivalDate;
     private String passengerName;
     private CaseStatus status;
-    private String employeeName;
+    private String colleague;
 }

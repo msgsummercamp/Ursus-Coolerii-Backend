@@ -21,8 +21,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -115,6 +114,7 @@ public class CaseFileServiceImpl implements CaseFileService {
                 .user(creatorUser)
                 .disruptionDetails(saveCaseRequest.getDisruptionDetails())
                 .status(CaseStatus.NOT_ASSIGNED)
+                .caseDate(new Timestamp(System.currentTimeMillis()))
                 .build();
 
         List<Document> documents = toDocument(uploadedDocuments);
@@ -256,7 +256,7 @@ public class CaseFileServiceImpl implements CaseFileService {
         caseFileSummaryDTO.setCaseDate(caseFile.getCaseDate());
         CaseFlights caseFlight = caseFile.getCaseFlights().stream().filter(CaseFlights::isProblemFlight).findFirst().orElse(null);
         if (caseFlight != null) {
-            caseFileSummaryDTO.setFlightNumber(caseFlight.getFlight().getFlightNumber());
+            caseFileSummaryDTO.setFlightNr(caseFlight.getFlight().getFlightNumber());
             caseFileSummaryDTO.setFlightDepartureDate(caseFlight.getFlight().getDepartureTime());
             caseFileSummaryDTO.setFlightArrivalDate(caseFlight.getFlight().getArrivalTime());
         }
@@ -272,7 +272,7 @@ public class CaseFileServiceImpl implements CaseFileService {
                         " " +
                         (employee.getLastName() != null ? employee.getLastName() : "")).trim()
                 : null);
-        caseFileSummaryDTO.setEmployeeName(employeeName);
+        caseFileSummaryDTO.setColleague(employeeName);
         return caseFileSummaryDTO;
     }
 }
