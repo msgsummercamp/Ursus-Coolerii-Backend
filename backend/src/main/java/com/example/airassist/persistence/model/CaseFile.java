@@ -25,6 +25,8 @@ public class CaseFile {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID caseId;
 
+    private String contractId;
+
     private Timestamp caseDate;
 
     @NotBlank(message = "The case should contain the reservation number")
