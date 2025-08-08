@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,9 +34,12 @@ public class AuthServiceTests {
     @MockitoBean
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private RedisTemplate redisTemplate;
+
     @BeforeEach
     public void setUp() {
-        authService = new AuthServiceImpl(authenticationManager, jwtTokenProvider, userRepository, passwordEncoder);
+        authService = new AuthServiceImpl(authenticationManager, jwtTokenProvider, userRepository, passwordEncoder, redisTemplate);
     }
 
     @Test
