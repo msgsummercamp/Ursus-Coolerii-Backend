@@ -11,6 +11,8 @@ import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,18 +21,29 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private RedisTemplate redisTemplate;
+
+    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Value("${redis.email.existence.key}")
+    private String REDIS_PREFIX;
 
 
     @Override
@@ -69,6 +82,8 @@ public class AuthServiceImpl implements AuthService {
             return new UserSaveFailedException("An unexpected error occurred while saving user", HttpStatus.INTERNAL_SERVER_ERROR);
         });
 
+        String key = REDIS_PREFIX + user.getEmail();
+        redisTemplate.opsForValue().set(key, true, Duration.ofHours(1));
         log.info("User {} saved successfully", user.getEmail());
     }
 
