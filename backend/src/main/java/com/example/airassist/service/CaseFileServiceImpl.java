@@ -1,9 +1,6 @@
 package com.example.airassist.service;
 
-import com.example.airassist.common.dto.CalculateRewardRequest;
-import com.example.airassist.common.dto.EligibilityRequest;
-import com.example.airassist.common.dto.FlightSaveDTO;
-import com.example.airassist.common.dto.SaveCaseRequest;
+import com.example.airassist.common.dto.*;
 import com.example.airassist.common.enums.CaseStatus;
 import com.example.airassist.common.exceptions.UserNotFoundException;
 import com.example.airassist.persistence.dao.CaseFileRepository;
@@ -24,8 +21,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,16 +104,17 @@ public class CaseFileServiceImpl implements CaseFileService {
 
     @Override
     @Transactional
-    public CaseFile saveCase(SaveCaseRequest saveCaseRequest, List<MultipartFile> uploadedDocuments) {
-        User creatorUser = userService.findByEmail(saveCaseRequest.getUserEmail()).orElseThrow(() ->
-                new UserNotFoundException("User with email " + saveCaseRequest.getUserEmail() + " not found", HttpStatus.NOT_FOUND));
-        Passenger passenger = passengerRepository.save(saveCaseRequest.getPassenger());
+    public CaseFile saveCase(CaseRequest saveRequest, List<MultipartFile> uploadedDocuments) {
+        User creatorUser = userService.findByEmail(saveRequest.getUserEmail()).orElseThrow(() ->
+                new UserNotFoundException("User with email " + saveRequest.getUserEmail() + " not found", HttpStatus.NOT_FOUND));
+        Passenger passenger = saveRequest.getPassenger();
         CaseFile caseFileToSave = CaseFile.builder()
                 .passenger(passenger)
-                .reservationNumber(saveCaseRequest.getReservationNumber())
+                .reservationNumber(saveRequest.getReservationNumber())
                 .user(creatorUser)
-                .disruptionDetails(saveCaseRequest.getDisruptionDetails())
+                .disruptionDetails(saveRequest.getDisruptionDetails())
                 .status(CaseStatus.NOT_ASSIGNED)
+                .caseDate(new Timestamp(System.currentTimeMillis()))
                 .build();
 
         List<Document> documents = toDocument(uploadedDocuments);
@@ -127,7 +124,7 @@ public class CaseFileServiceImpl implements CaseFileService {
         caseFileToSave = caseFileRepository.save(caseFileToSave);
 
 
-        List<CaseFlights> caseFlights = getCaseFlights(caseFileToSave, saveCaseRequest.getFlights());
+        List<CaseFlights> caseFlights = getCaseFlights(caseFileToSave, saveRequest.getFlights());
         CaseFile finalCaseFileToSave = caseFileToSave;
 
         caseFlights.forEach(c -> {
@@ -244,5 +241,38 @@ public class CaseFileServiceImpl implements CaseFileService {
 
     private boolean isEligibleForDeniedBoarding( Boolean isVoluntarilyGivenUp) {
         return isVoluntarilyGivenUp != null && !isVoluntarilyGivenUp;
+    }
+
+    @Override
+    public List<CaseFileSummaryDTO> getAllCaseSummaries() {
+        List<CaseFile> cases = caseFileRepository.findAll();
+        return cases.stream().map(this::mapCaseFileToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private CaseFileSummaryDTO mapCaseFileToDTO(CaseFile caseFile) {
+        CaseFileSummaryDTO caseFileSummaryDTO = new CaseFileSummaryDTO();
+        caseFileSummaryDTO.setCaseId(caseFile.getCaseId());
+        caseFileSummaryDTO.setCaseDate(caseFile.getCaseDate());
+        CaseFlights caseFlight = caseFile.getCaseFlights().stream().filter(CaseFlights::isProblemFlight).findFirst().orElse(null);
+        if (caseFlight != null) {
+            caseFileSummaryDTO.setFlightNr(caseFlight.getFlight().getFlightNumber());
+            caseFileSummaryDTO.setFlightDepartureDate(caseFlight.getFlight().getDepartureTime());
+            caseFileSummaryDTO.setFlightArrivalDate(caseFlight.getFlight().getArrivalTime());
+        }
+        Passenger passenger = caseFile.getPassenger();
+        String passengerName = (passenger.getFirstName() != null ? passenger.getFirstName() : "") +
+                " " +
+                (passenger.getLastName() != null ? passenger.getLastName() : "");
+        caseFileSummaryDTO.setPassengerName(passengerName.trim());
+        caseFileSummaryDTO.setStatus(caseFile.getStatus());
+        User employee = caseFile.getEmployee();
+        String employeeName = (employee != null ?
+                ((employee.getFirstName() != null ? employee.getFirstName() : "") +
+                        " " +
+                        (employee.getLastName() != null ? employee.getLastName() : "")).trim()
+                : null);
+        caseFileSummaryDTO.setColleague(employeeName);
+        return caseFileSummaryDTO;
     }
 }

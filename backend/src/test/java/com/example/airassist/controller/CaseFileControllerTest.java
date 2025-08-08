@@ -2,6 +2,7 @@ package com.example.airassist.controller;
 
 import com.example.airassist.common.enums.Disruption;
 import com.example.airassist.common.dto.EligibilityRequest;
+import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -22,12 +23,15 @@ public class CaseFileControllerTest {
     @Mock
     private CaseFileService caseFileService;
 
+    @Mock
+    private AuthService authService;
+
     private CaseFileController caseFileController;
 
     @BeforeEach
     void setUp() throws Exception {
         try (var ignored = MockitoAnnotations.openMocks(this)) {
-            caseFileController = new CaseFileController(caseFileService);
+            caseFileController = new CaseFileController(caseFileService, authService);
         }
     }
 

@@ -1,7 +1,8 @@
 package com.example.airassist.service;
 
+import com.example.airassist.common.dto.CaseRequest;
 import com.example.airassist.common.dto.FlightSaveDTO;
-import com.example.airassist.common.dto.SaveCaseRequest;
+import com.example.airassist.common.dto.SaveRequest;
 import com.example.airassist.common.enums.Disruption;
 import com.example.airassist.common.dto.EligibilityRequest;
 import com.example.airassist.persistence.dao.CaseFileRepository;
@@ -14,10 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -400,10 +398,10 @@ class CaseFileServiceImplTest {
             user.setEmail("mock@gmail.com");
             Passenger passenger = new Passenger();
             passenger.setFirstName("Mock");
-            SaveCaseRequest saveCaseRequest = new SaveCaseRequest();
-            saveCaseRequest.setUserEmail("mock@gmail.com");
-            saveCaseRequest.setPassenger(passenger);
-            saveCaseRequest.setReservationNumber("ABC123");
+            CaseRequest saveRequest = new CaseRequest();
+            saveRequest.setUserEmail("mock@gmail.com");
+            saveRequest.setPassenger(passenger);
+            saveRequest.setReservationNumber("ABC123");
             FlightSaveDTO flightDTO = new FlightSaveDTO();
             flightDTO.setFlightNumber("FL123");
             flightDTO.setDepartureAirport("Cluj");
@@ -414,7 +412,7 @@ class CaseFileServiceImplTest {
             flightDTO.setProblemFlight(false);
             flightDTO.setFirstFlight(true);
             flightDTO.setLastFlight(true);
-            saveCaseRequest.setFlights(List.of(flightDTO));
+            saveRequest.setFlights(List.of(flightDTO));
 
             Flight flight = Flight.builder()
                     .flightNumber("FL123")
@@ -445,7 +443,7 @@ class CaseFileServiceImplTest {
             when(caseFileRepository.save(any(CaseFile.class))).thenReturn(caseFile);
             when(flightService.saveAll(anyList())).thenReturn(List.of(flight));
             when(caseFlightRepository.saveAll(anyList())).thenReturn(List.of(caseFlights));
-            CaseFile result = caseFileService.saveCase(saveCaseRequest, List.of());
+            CaseFile result = caseFileService.saveCase(saveRequest, List.of());
 
             assertNotNull(result);
             assertEquals(passenger, result.getPassenger());

@@ -1,36 +1,38 @@
 package com.example.airassist.controller;
 
 import com.example.airassist.common.dto.CalculateRewardRequest;
+import com.example.airassist.common.dto.CaseFileSummaryDTO;
 import com.example.airassist.common.dto.EligibilityRequest;
-import com.example.airassist.common.dto.SaveCaseRequest;
+import com.example.airassist.common.dto.SaveRequest;
+import com.example.airassist.common.dto.SignupRequest;
 import com.example.airassist.persistence.model.CaseFile;
+import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/case-files")
 @AllArgsConstructor
 @Slf4j
+@Validated
 public class CaseFileController {
-    public final CaseFileService caseFileService;
+    private final CaseFileService caseFileService;
+    private final AuthService authService;
 
     @PostMapping("/eligibility")
     public ResponseEntity<Boolean> isEligible(@RequestBody EligibilityRequest eligibilityRequest) {
         return ResponseEntity.ok(caseFileService.isEligible(eligibilityRequest));
     }
 
-    @GetMapping()
-    public Iterable<CaseFile> getAllCaseFiles() {
-        return caseFileService.findAllCaseFiles();
-    }
 
     @PostMapping("/calculate-reward")
     public int calculateCaseReward(@RequestBody CalculateRewardRequest calculateRewardRequest) {
@@ -39,11 +41,24 @@ public class CaseFileController {
 
 
     @PostMapping
-    public ResponseEntity<CaseFile> saveCase(@RequestPart("case") SaveCaseRequest saveCaseRequest,
+    public ResponseEntity<CaseFile> saveCase(@RequestPart("saveRequest") SaveRequest saveRequest,
                                              @RequestPart("files") MultipartFile[] uploadedDocuments) {
-        log.info("Save case request received: {}", saveCaseRequest);
-        CaseFile savedCaseFile =  caseFileService.saveCase(saveCaseRequest, Arrays.asList(uploadedDocuments));
+        log.info("Save case request received: {}", saveRequest);
+        SignupRequest  signupRequest = saveRequest.getSignupRequest();
+
+        if(signupRequest != null)
+            authService.signup(signupRequest);
+        CaseFile savedCaseFile =  caseFileService.saveCase(saveRequest.getCaseRequest(), Arrays.asList(uploadedDocuments));
+
         log.info("Save case successfully: {}", savedCaseFile);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCaseFile);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CaseFileSummaryDTO>> getAllCases() {
+        log.info("Get all cases request received");
+        List<CaseFileSummaryDTO> cases = caseFileService.getAllCaseSummaries();
+        log.info("Get all cases response, count {}", cases.size());
+        return ResponseEntity.ok(cases);
     }
 }

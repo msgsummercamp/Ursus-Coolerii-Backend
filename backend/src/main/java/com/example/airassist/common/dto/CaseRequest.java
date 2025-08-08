@@ -12,12 +12,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class SaveCaseRequest {
+public class CaseRequest {
     private DisruptionDetails disruptionDetails;
     private String reservationNumber;
     private List<FlightSaveDTO> flights;
     private Passenger passenger;
     private String userEmail;
-
 }
