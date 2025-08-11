@@ -38,6 +38,7 @@ public class CaseFileServiceImpl implements CaseFileService {
     private final AirlineService airlineService;
     private final CaseFlightRepository caseFlightRepository;
     private final FlightService flightService;
+    private MailSenderService mailSenderService;
 
     @Value("${MIN_REWARD}")
     private int minReward;
@@ -60,7 +61,8 @@ public class CaseFileServiceImpl implements CaseFileService {
                                AirlineService airlineService,
                                PassengerRepository passengerRepository,
                                CaseFlightRepository caseFlightRepository,
-                               FlightService flightService) {
+                               FlightService flightService,
+                               MailSenderService mailSenderService) {
         this.caseFileRepository = caseFileRepository;
         this.airportService = airportService;
         this.userService = userService;
@@ -68,6 +70,7 @@ public class CaseFileServiceImpl implements CaseFileService {
         this.passengerRepository = passengerRepository;
         this.caseFlightRepository = caseFlightRepository;
         this.flightService = flightService;
+        this.mailSenderService = mailSenderService;
     }
 
     @Override
@@ -137,6 +140,8 @@ public class CaseFileServiceImpl implements CaseFileService {
         });
         caseFlightRepository.saveAll(caseFlights);
         caseFileToSave.setCaseFlights(caseFlights);
+
+        mailSenderService.sendMailWithCase(saveRequest.getUserEmail(), caseFileToSave.getCaseId().toString());
 
         return caseFileToSave;
     }

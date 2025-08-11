@@ -6,5 +6,6 @@ import java.util.UUID;
 
 @Service
 public interface MailSenderService {
-    void sendMail(String to, UUID caseFileId);
+    void sendMailWithPass(String to, String password);
+    void sendMailWithCase(String to, String caseId);
 }
