@@ -294,7 +294,6 @@ public class CaseFileServiceImpl implements CaseFileService {
         dto.setContractId(caseFile.getContractId());
         dto.setReservationNumber(caseFile.getReservationNumber());
 
-        // Flights
         dto.setFlights(caseFile.getCaseFlights().stream().map(cf -> {
             FlightDetailsDTO f = new FlightDetailsDTO();
             f.setFlightNumber(cf.getFlight().getFlightNumber());
@@ -308,7 +307,6 @@ public class CaseFileServiceImpl implements CaseFileService {
             return f;
         }).toList());
 
-        // Passenger
         Passenger p = caseFile.getPassenger();
         PassengerDTO passengerDTO = new PassengerDTO();
         passengerDTO.setFirstName(p.getFirstName());
@@ -320,7 +318,6 @@ public class CaseFileServiceImpl implements CaseFileService {
         passengerDTO.setEmail(caseFile.getUser().getEmail());
         dto.setPassenger(passengerDTO);
 
-        // Documents
         dto.setDocuments(caseFile.getDocuments().stream().map(doc -> {
             DocumentDTO d = new DocumentDTO();
             d.setFilename(doc.getId().toString());
@@ -328,7 +325,6 @@ public class CaseFileServiceImpl implements CaseFileService {
             return d;
         }).toList());
 
-        // Comments
         dto.setComments(caseFile.getComments().stream().map(comment -> {
             CommentDTO c = new CommentDTO();
             c.setUserEmail(comment.getUser().getEmail());
