@@ -108,15 +108,13 @@ public class CaseFileServiceImpl implements CaseFileService {
         User creatorUser = userService.findByEmail(saveRequest.getUserEmail()).orElseThrow(() ->
                 new UserNotFoundException("User with email " + saveRequest.getUserEmail() + " not found", HttpStatus.NOT_FOUND));
         Passenger passenger = saveRequest.getPassenger();
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         CaseFile caseFileToSave = CaseFile.builder()
-                .contractId(generateContractId(currentTime))
                 .passenger(passenger)
                 .reservationNumber(saveRequest.getReservationNumber())
                 .user(creatorUser)
                 .disruptionDetails(saveRequest.getDisruptionDetails())
                 .status(CaseStatus.NOT_ASSIGNED)
-                .caseDate(currentTime)
+                .caseDate(new Timestamp(System.currentTimeMillis()))
                 .build();
 
         List<Document> documents = toDocument(uploadedDocuments);
@@ -252,14 +250,9 @@ public class CaseFileServiceImpl implements CaseFileService {
                 .collect(Collectors.toList());
     }
 
-    private String generateContractId(Timestamp caseDate) {
-        String timestamp = String.valueOf(caseDate.getTime());
-        return timestamp.substring(Math.max(0, timestamp.length() - 6));
-    }
-
     private CaseFileSummaryDTO mapCaseFileToDTO(CaseFile caseFile) {
         CaseFileSummaryDTO caseFileSummaryDTO = new CaseFileSummaryDTO();
-        caseFileSummaryDTO.setContractId(caseFile.getContractId());
+        caseFileSummaryDTO.setCaseId(caseFile.getCaseId());
         caseFileSummaryDTO.setCaseDate(caseFile.getCaseDate());
         CaseFlights caseFlight = caseFile.getCaseFlights().stream().filter(CaseFlights::isProblemFlight).findFirst().orElse(null);
         if (caseFlight != null) {
@@ -271,7 +264,6 @@ public class CaseFileServiceImpl implements CaseFileService {
         String passengerName = (passenger.getFirstName() != null ? passenger.getFirstName() : "") +
                 " " +
                 (passenger.getLastName() != null ? passenger.getLastName() : "");
-        caseFileSummaryDTO.setReservationNumber(caseFile.getReservationNumber());
         caseFileSummaryDTO.setPassengerName(passengerName.trim());
         caseFileSummaryDTO.setStatus(caseFile.getStatus());
         User employee = caseFile.getEmployee();
