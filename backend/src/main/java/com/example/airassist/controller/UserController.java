@@ -1,6 +1,7 @@
 package com.example.airassist.controller;
 
 
+import com.example.airassist.common.dto.UserDTO;
 import com.example.airassist.persistence.model.User;
 import com.example.airassist.service.UserService;
 import jakarta.validation.Valid;
@@ -27,7 +28,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(
+    public ResponseEntity<List<UserDTO>> getAllUsers(
             @RequestParam(required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(required = false, defaultValue = "3") Integer pageSize
     ) {
