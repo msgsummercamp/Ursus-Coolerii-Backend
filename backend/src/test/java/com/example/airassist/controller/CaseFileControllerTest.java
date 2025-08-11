@@ -1,7 +1,9 @@
 package com.example.airassist.controller;
 
+import com.example.airassist.common.enums.DaysBeforeNotice;
 import com.example.airassist.common.enums.Disruption;
 import com.example.airassist.common.dto.EligibilityRequest;
+import com.example.airassist.common.enums.HoursBeforeArrival;
 import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
 import org.junit.jupiter.api.Test;
@@ -44,7 +46,7 @@ public class CaseFileControllerTest {
         public void testCancellationEligible_LessThan14Days() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(13);
+            request.setNoticeDays(DaysBeforeNotice.LESS_THAN_14);
 
             when(caseFileService.isEligible(any(EligibilityRequest.class))).thenReturn(true);
 
@@ -59,7 +61,7 @@ public class CaseFileControllerTest {
         public void testCancellationNotEligible_Exactly14Days() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(14);
+            request.setNoticeDays(DaysBeforeNotice.MORE_THAN_14);
 
             when(caseFileService.isEligible(any(EligibilityRequest.class))).thenReturn(false);
 
@@ -74,7 +76,7 @@ public class CaseFileControllerTest {
         public void testCancellationNotEligible_MoreThan14Days() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(15);
+            request.setNoticeDays(DaysBeforeNotice.MORE_THAN_14);
 
             when(caseFileService.isEligible(any(EligibilityRequest.class))).thenReturn(false);
 
@@ -89,7 +91,7 @@ public class CaseFileControllerTest {
         public void testCancellationEligible_ZeroDays() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(0);
+            request.setNoticeDays(DaysBeforeNotice.LESS_THAN_14);
 
             when(caseFileService.isEligible(any(EligibilityRequest.class))).thenReturn(true);
 
@@ -109,7 +111,7 @@ public class CaseFileControllerTest {
         public void testDelayEligible_NotArrived() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(2);
+            request.setDelayHours(HoursBeforeArrival.LOST_CONNECTION);
             request.setArrived(false);
 
             when(caseFileService.isEligible(any(EligibilityRequest.class))).thenReturn(true);
@@ -125,7 +127,7 @@ public class CaseFileControllerTest {
         public void testDelayEligible_ArrivedMoreThan3Hours() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(4);
+            request.setDelayHours(HoursBeforeArrival.MORE_THAN_3);
             request.setArrived(true);
 
             when(caseFileService.isEligible(any(EligibilityRequest.class))).thenReturn(true);
@@ -141,7 +143,7 @@ public class CaseFileControllerTest {
         public void testDelayNotEligible_ArrivedExactly3Hours() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(3);
+            request.setDelayHours(HoursBeforeArrival.LESS_THAN_3);
             request.setArrived(true);
 
             when(caseFileService.isEligible(any(EligibilityRequest.class))).thenReturn(false);
@@ -157,7 +159,7 @@ public class CaseFileControllerTest {
         public void testDelayNotEligible_ArrivedLessThan3Hours() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(2);
+            request.setDelayHours(HoursBeforeArrival.LESS_THAN_3);
             request.setArrived(true);
 
             when(caseFileService.isEligible(any(EligibilityRequest.class))).thenReturn(false);

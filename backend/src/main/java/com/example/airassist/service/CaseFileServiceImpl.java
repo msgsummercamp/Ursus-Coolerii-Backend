@@ -2,6 +2,8 @@ package com.example.airassist.service;
 
 import com.example.airassist.common.dto.*;
 import com.example.airassist.common.enums.CaseStatus;
+import com.example.airassist.common.enums.DaysBeforeNotice;
+import com.example.airassist.common.enums.HoursBeforeArrival;
 import com.example.airassist.common.exceptions.UserNotFoundException;
 import com.example.airassist.persistence.dao.CaseFileRepository;
 import com.example.airassist.persistence.dao.CaseFlightRepository;
@@ -222,7 +224,7 @@ public class CaseFileServiceImpl implements CaseFileService {
                 return isEligibleForCancellation(eligibilityRequest.getNoticeDays());
             }
             case DELAY -> {
-                return isEligibleForDelay(eligibilityRequest.getDelayHours(), eligibilityRequest.getArrived());
+                return isEligibleForDelay(eligibilityRequest.getDelayHours());
             }
             case DENIED_BOARDING -> {
                 return isEligibleForDeniedBoarding(eligibilityRequest.getIsVoluntarilyGivenUp());
@@ -233,12 +235,12 @@ public class CaseFileServiceImpl implements CaseFileService {
         }
     }
 
-    private boolean isEligibleForCancellation( Integer noticeDays) {
-        return noticeDays != null && noticeDays < 14;
+    private boolean isEligibleForCancellation(DaysBeforeNotice noticeDays) {
+        return noticeDays == DaysBeforeNotice.LESS_THAN_14 || noticeDays == DaysBeforeNotice.ON_FLIGHT_DAY;
     }
 
-    private boolean isEligibleForDelay(Integer delayHours, Boolean arrived) {
-        return (arrived != null && !arrived) || (delayHours != null && delayHours > 3);
+    private boolean isEligibleForDelay(HoursBeforeArrival delayHours) {
+        return delayHours == HoursBeforeArrival.MORE_THAN_3 || delayHours == HoursBeforeArrival.LOST_CONNECTION;
     }
 
     private boolean isEligibleForDeniedBoarding( Boolean isVoluntarilyGivenUp) {
