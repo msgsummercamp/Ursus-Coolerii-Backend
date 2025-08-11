@@ -31,6 +31,12 @@ public class AuthServiceTests {
     @Mock
     private AuthService authService;
 
+    @Mock
+    private MailSenderService mailSenderService;
+
+    @Mock
+    private RedisTemplate redisTemplate;
+
     @MockitoBean
     private PasswordEncoder passwordEncoder;
 
@@ -39,7 +45,7 @@ public class AuthServiceTests {
 
     @BeforeEach
     public void setUp() {
-        authService = new AuthServiceImpl(authenticationManager, jwtTokenProvider, userRepository, passwordEncoder, redisTemplate);
+        authService = new AuthServiceImpl(authenticationManager, jwtTokenProvider, userRepository, passwordEncoder, redisTemplate, mailSenderService);
     }
 
     @Test

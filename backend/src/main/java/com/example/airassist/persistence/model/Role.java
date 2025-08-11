@@ -13,6 +13,5 @@ import java.util.UUID;
 @Table(name = "roles")
 @AllArgsConstructor
 public class Role {
-    @Id
-    private String name;
+    private @Id String name;
 }
