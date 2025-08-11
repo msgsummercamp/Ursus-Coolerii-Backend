@@ -1,6 +1,8 @@
 package com.example.airassist.persistence.model;
 
+import com.example.airassist.common.enums.DaysBeforeNotice;
 import com.example.airassist.common.enums.Disruption;
+import com.example.airassist.common.enums.HoursBeforeArrival;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,9 +25,9 @@ public class DisruptionDetails {
     private UUID id;
 
     private Disruption disruption;
-    private Integer noticeDays;
+    private DaysBeforeNotice noticeDays;
     private Boolean arrived;
-    private Integer delayHours;
+    private HoursBeforeArrival delayHours;
     private Boolean isVoluntarilyGivenUp;
 
 }

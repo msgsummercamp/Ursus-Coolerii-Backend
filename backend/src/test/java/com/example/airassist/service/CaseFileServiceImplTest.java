@@ -2,9 +2,10 @@ package com.example.airassist.service;
 
 import com.example.airassist.common.dto.CaseRequest;
 import com.example.airassist.common.dto.FlightSaveDTO;
-import com.example.airassist.common.dto.SaveRequest;
+import com.example.airassist.common.enums.DaysBeforeNotice;
 import com.example.airassist.common.enums.Disruption;
 import com.example.airassist.common.dto.EligibilityRequest;
+import com.example.airassist.common.enums.HoursBeforeArrival;
 import com.example.airassist.persistence.dao.CaseFileRepository;
 import com.example.airassist.persistence.dao.CaseFlightRepository;
 import com.example.airassist.persistence.dao.PassengerRepository;
@@ -72,7 +73,7 @@ class CaseFileServiceImplTest {
         void isEligible_CancellationWithLessThan14Days_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(13);
+            request.setNoticeDays(DaysBeforeNotice.LESS_THAN_14);
 
             Boolean result = caseFileService.isEligible(request);
 
@@ -84,7 +85,7 @@ class CaseFileServiceImplTest {
         void isEligible_CancellationWith14Days_ShouldReturnFalse() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(14);
+            request.setNoticeDays(DaysBeforeNotice.MORE_THAN_14);
 
             Boolean result = caseFileService.isEligible(request);
 
@@ -96,7 +97,7 @@ class CaseFileServiceImplTest {
         void isEligible_CancellationWithMoreThan14Days_ShouldReturnFalse() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(15);
+            request.setNoticeDays(DaysBeforeNotice.MORE_THAN_14);
 
             Boolean result = caseFileService.isEligible(request);
 
@@ -108,7 +109,7 @@ class CaseFileServiceImplTest {
         void isEligible_CancellationWithZeroDays_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(0);
+            request.setNoticeDays(DaysBeforeNotice.ON_FLIGHT_DAY);
 
             Boolean result = caseFileService.isEligible(request);
 
@@ -120,7 +121,7 @@ class CaseFileServiceImplTest {
         void isEligible_CancellationWithNegativeDays_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(-1);
+            request.setNoticeDays(DaysBeforeNotice.ON_FLIGHT_DAY);
 
             Boolean result = caseFileService.isEligible(request);
 
@@ -137,7 +138,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayNotArrived_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(1);
+            request.setDelayHours(HoursBeforeArrival.MORE_THAN_3);
             request.setArrived(false);
 
             Boolean result = caseFileService.isEligible(request);
@@ -150,7 +151,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayArrivedWithMoreThan3Hours_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(4);
+            request.setDelayHours(HoursBeforeArrival.MORE_THAN_3);
             request.setArrived(true);
 
             Boolean result = caseFileService.isEligible(request);
@@ -163,7 +164,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayArrivedWith3Hours_ShouldReturnFalse() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(3);
+            request.setDelayHours(HoursBeforeArrival.LESS_THAN_3);
             request.setArrived(true);
 
             Boolean result = caseFileService.isEligible(request);
@@ -176,7 +177,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayArrivedWithLessThan3Hours_ShouldReturnFalse() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(2);
+            request.setDelayHours(HoursBeforeArrival.LESS_THAN_3);
             request.setArrived(true);
 
             Boolean result = caseFileService.isEligible(request);
@@ -189,7 +190,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayNotArrivedWithZeroHours_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(0);
+            request.setDelayHours(HoursBeforeArrival.MORE_THAN_3);
             request.setArrived(false);
 
             Boolean result = caseFileService.isEligible(request);
@@ -202,7 +203,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayArrivedWithZeroHours_ShouldReturnFalse() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(0);
+            request.setDelayHours(HoursBeforeArrival.LESS_THAN_3);
             request.setArrived(true);
 
             Boolean result = caseFileService.isEligible(request);
@@ -215,7 +216,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayArrivedWithNegativeHours_ShouldReturnFalse() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(-1);
+            request.setDelayHours(HoursBeforeArrival.LESS_THAN_3);
             request.setArrived(true);
 
             Boolean result = caseFileService.isEligible(request);
@@ -228,7 +229,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayNotArrivedWithNegativeHours_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(-1);
+            request.setDelayHours(HoursBeforeArrival.LOST_CONNECTION);
             request.setArrived(false);
 
             Boolean result = caseFileService.isEligible(request);
@@ -276,7 +277,7 @@ class CaseFileServiceImplTest {
         void isEligible_CancellationBoundary13Days_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(13);
+            request.setNoticeDays(DaysBeforeNotice.LESS_THAN_14);
 
             Boolean result = caseFileService.isEligible(request);
 
@@ -288,7 +289,7 @@ class CaseFileServiceImplTest {
         void isEligible_CancellationBoundary15Days_ShouldReturnFalse() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.CANCELLATION);
-            request.setNoticeDays(15);
+            request.setNoticeDays(DaysBeforeNotice.MORE_THAN_14);
 
             Boolean result = caseFileService.isEligible(request);
 
@@ -300,7 +301,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayBoundary2Hours_ShouldReturnFalse() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(2);
+            request.setDelayHours(HoursBeforeArrival.LESS_THAN_3);
             request.setArrived(true);
 
             Boolean result = caseFileService.isEligible(request);
@@ -313,7 +314,7 @@ class CaseFileServiceImplTest {
         void isEligible_DelayBoundary4Hours_ShouldReturnTrue() {
             EligibilityRequest request = new EligibilityRequest();
             request.setDisruption(Disruption.DELAY);
-            request.setDelayHours(4);
+            request.setDelayHours(HoursBeforeArrival.MORE_THAN_3);
             request.setArrived(true);
 
             Boolean result = caseFileService.isEligible(request);
