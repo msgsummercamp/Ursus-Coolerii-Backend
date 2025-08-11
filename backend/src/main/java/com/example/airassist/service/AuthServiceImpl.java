@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -92,6 +93,11 @@ public class AuthServiceImpl implements AuthService {
         log.info("User {} saved successfully", user.getEmail());
 
         mailSenderService.sendMailWithPass(user.getEmail(), password);
+    }
+
+    @Override
+    public boolean checkLogged(String token) {
+        return jwtTokenProvider.validateToken(token);
     }
 
     private User createUserWithGeneratedPassword(String email, String firstName, String lastName) {

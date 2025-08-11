@@ -9,4 +9,5 @@ import com.example.airassist.common.dto.SignupResponse;
 public interface AuthService {
     LoginResponse login(LoginRequest loginRequest);
     void signup(SignupRequest signupRequest);
+    boolean checkLogged(String token);
 }

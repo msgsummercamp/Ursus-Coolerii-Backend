@@ -13,7 +13,5 @@ import java.util.UUID;
 @Table(name = "roles")
 @AllArgsConstructor
 public class Role {
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private @Id UUID id;
-    private String name;
+    private @Id String name;
 }
