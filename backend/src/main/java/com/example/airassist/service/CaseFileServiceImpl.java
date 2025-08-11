@@ -23,6 +23,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -282,5 +283,66 @@ public class CaseFileServiceImpl implements CaseFileService {
                 : null);
         caseFileSummaryDTO.setColleague(employeeName);
         return caseFileSummaryDTO;
+    }
+
+    @Override
+    public CaseDetailsDTO getCaseDetailsByContractId(String contractId) {
+        CaseFile caseFile = caseFileRepository.findByContractId(contractId)
+                .orElseThrow(() -> new RuntimeException("Case not found"));
+
+        CaseDetailsDTO dto = new CaseDetailsDTO();
+        dto.setContractId(caseFile.getContractId());
+        dto.setReservationNumber(caseFile.getReservationNumber());
+
+        // Flights
+        dto.setFlights(caseFile.getCaseFlights().stream().map(cf -> {
+            FlightDetailsDTO f = new FlightDetailsDTO();
+            f.setFlightNumber(cf.getFlight().getFlightNumber());
+            f.setAirline(cf.getFlight().getAirline().getName());
+            f.setReservationNumber(caseFile.getReservationNumber());
+            f.setDepartureAirport(cf.getFlight().getDepartureAirport());
+            f.setDestinationAirport(cf.getFlight().getDestinationAirport());
+            f.setConnectingFlight(!cf.isFirst() && !cf.isLast());
+            f.setPlannedDepartureTime(cf.getFlight().getDepartureTime());
+            f.setPlannedArrivalTime(cf.getFlight().getArrivalTime());
+            return f;
+        }).toList());
+
+        // Passenger
+        Passenger p = caseFile.getPassenger();
+        PassengerDTO passengerDTO = new PassengerDTO();
+        passengerDTO.setFirstName(p.getFirstName());
+        passengerDTO.setLastName(p.getLastName());
+        passengerDTO.setDateOfBirth(p.getDateOfBirth());
+        passengerDTO.setPhone(p.getPhoneNumber());
+        passengerDTO.setAddress(p.getAddress());
+        passengerDTO.setPostalCode(p.getPostalCode());
+        passengerDTO.setEmail(caseFile.getUser().getEmail());
+        dto.setPassenger(passengerDTO);
+
+        // Documents
+        dto.setDocuments(caseFile.getDocuments().stream().map(doc -> {
+            DocumentDTO d = new DocumentDTO();
+            d.setFilename(doc.getId().toString());
+            d.setUploadTimestamp(caseFile.getCaseDate());
+            return d;
+        }).toList());
+
+        // Comments
+        dto.setComments(caseFile.getComments().stream().map(comment -> {
+            CommentDTO c = new CommentDTO();
+            c.setUserEmail(comment.getUser().getEmail());
+            c.setUserType(
+                    comment.getUser().getRole() != null &&
+                            comment.getUser().getRole().stream().anyMatch(r -> "EMPLOYEE".equalsIgnoreCase(r.getName()))
+                            ? "Colleague"
+                            : "Passenger"
+            );
+            c.setContent(comment.getContent());
+            c.setTimestamp(comment.getSentTime());
+            return c;
+        }).toList());
+
+        return dto;
     }
 }

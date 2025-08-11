@@ -1,10 +1,6 @@
 package com.example.airassist.controller;
 
-import com.example.airassist.common.dto.CalculateRewardRequest;
-import com.example.airassist.common.dto.CaseFileSummaryDTO;
-import com.example.airassist.common.dto.EligibilityRequest;
-import com.example.airassist.common.dto.SaveRequest;
-import com.example.airassist.common.dto.SignupRequest;
+import com.example.airassist.common.dto.*;
 import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
@@ -60,5 +56,11 @@ public class CaseFileController {
         List<CaseFileSummaryDTO> cases = caseFileService.getAllCaseSummaries();
         log.info("Get all cases response, count {}", cases.size());
         return ResponseEntity.ok(cases);
+    }
+
+    @GetMapping("/contract/{contractId}")
+    public ResponseEntity<CaseDetailsDTO> getCaseDetailsByContractId(@PathVariable String contractId) {
+        log.info("Get case details by contract ID request received: {}", contractId);
+        return ResponseEntity.ok(caseFileService.getCaseDetailsByContractId(contractId));
     }
 }
