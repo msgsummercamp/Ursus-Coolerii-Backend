@@ -1,5 +1,6 @@
 package com.example.airassist.service;
 
+import com.example.airassist.persistence.dao.CaseFileRepository;
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +21,12 @@ public class UserServiceTests {
     @MockitoBean
     private UserRepository userRepository;
 
+    @MockitoBean
+    private CaseFileRepository caseFileRepository;
+
     @BeforeEach
     void setUp(){
-        userService = new UserServiceImpl(userRepository);
+        userService = new UserServiceImpl(userRepository, caseFileRepository);
     }
 
     @Test
