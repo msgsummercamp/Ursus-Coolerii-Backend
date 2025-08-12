@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,6 +53,9 @@ class CaseFileServiceImplTest {
     @Mock
     private FlightService flightService;
 
+    @Mock
+    private MailSenderService mailSenderService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -61,7 +65,8 @@ class CaseFileServiceImplTest {
                 airlineService,
                 passengerRepository,
                 caseFlightRepository,
-                flightService);
+                flightService,
+                mailSenderService);
     }
 
     @Nested
@@ -429,6 +434,7 @@ class CaseFileServiceImplTest {
                     .reservationNumber("ABC123")
                     .user(user)
                     .status(com.example.airassist.common.enums.CaseStatus.NOT_ASSIGNED)
+                    .caseId(UUID.randomUUID())
                     .build();
 
             CaseFlights caseFlights = CaseFlights.builder()
