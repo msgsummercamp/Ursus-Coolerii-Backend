@@ -11,8 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CaseFileRepository extends JpaRepository<CaseFile, Long> {
+public interface CaseFileRepository extends JpaRepository<CaseFile, UUID> {
     @Query(value = "SELECT COUNT(*) FROM cases WHERE user_id = :userId", nativeQuery = true)
     int countByUserId(@Param("userId") UUID userId);
-    Optional<CaseFile> findByContractId(String contractId);
 }

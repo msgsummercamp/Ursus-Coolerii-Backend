@@ -2,6 +2,7 @@ package com.example.airassist.controller;
 
 import com.example.airassist.common.dto.*;
 import com.example.airassist.persistence.model.CaseFile;
+import com.example.airassist.persistence.model.Document;
 import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/case-files")
@@ -58,9 +60,11 @@ public class CaseFileController {
         return ResponseEntity.ok(cases);
     }
 
-    @GetMapping("/contract/{contractId}")
-    public ResponseEntity<CaseDetailsDTO> getCaseDetailsByContractId(@PathVariable String contractId) {
-        log.info("Get case details by contract ID request received: {}", contractId);
-        return ResponseEntity.ok(caseFileService.getCaseDetailsByContractId(contractId));
+    @GetMapping("/contract/{caseId}")
+    public ResponseEntity<CaseDetailsDTO> getCaseDetailsByCaseId(@PathVariable UUID caseId) {
+        log.info("Get case details by case ID request received: {}", caseId);
+        CaseDetailsDTO details = caseFileService.getCaseDetailsByCaseId(caseId);
+        log.info("Case details response: {}", details);
+        return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
     }
 }

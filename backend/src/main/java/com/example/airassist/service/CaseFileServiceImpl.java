@@ -131,7 +131,6 @@ public class CaseFileServiceImpl implements CaseFileService {
         caseFileToSave.setDocuments(documents);
         caseFileToSave = caseFileRepository.save(caseFileToSave);
 
-
         List<CaseFlights> caseFlights = getCaseFlights(caseFileToSave, saveRequest.getFlights());
         CaseFile finalCaseFileToSave = caseFileToSave;
 
@@ -294,11 +293,12 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     @Override
-    public CaseDetailsDTO getCaseDetailsByContractId(String contractId) {
-        CaseFile caseFile = caseFileRepository.findByContractId(contractId)
+    public CaseDetailsDTO getCaseDetailsByCaseId(UUID caseId) {
+        CaseFile caseFile = caseFileRepository.findById(caseId)
                 .orElseThrow(() -> new RuntimeException("Case not found"));
 
         CaseDetailsDTO dto = new CaseDetailsDTO();
+        dto.setCaseId(caseFile.getCaseId());
         dto.setContractId(caseFile.getContractId());
         dto.setReservationNumber(caseFile.getReservationNumber());
 
@@ -309,7 +309,7 @@ public class CaseFileServiceImpl implements CaseFileService {
             f.setReservationNumber(caseFile.getReservationNumber());
             f.setDepartureAirport(cf.getFlight().getDepartureAirport());
             f.setDestinationAirport(cf.getFlight().getDestinationAirport());
-            f.setConnectingFlight(!cf.isFirst() && !cf.isLast());
+            f.setProblemFlight(cf.isProblemFlight());
             f.setPlannedDepartureTime(cf.getFlight().getDepartureTime());
             f.setPlannedArrivalTime(cf.getFlight().getArrivalTime());
             return f;

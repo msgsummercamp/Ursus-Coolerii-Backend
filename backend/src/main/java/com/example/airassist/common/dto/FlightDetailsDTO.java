@@ -10,7 +10,7 @@ public class FlightDetailsDTO {
     private String reservationNumber;
     private String departureAirport;
     private String destinationAirport;
-    private boolean connectingFlight;
+    private boolean problemFlight;
     private Timestamp plannedDepartureTime;
     private Timestamp plannedArrivalTime;
 }

@@ -33,7 +33,7 @@ public class AirportUpdateJob {
         this.restTemplate = restTemplate;
         this.redisTemplate = redisTemplate;
     }
-    @Scheduled(fixedRate = 6000000)
+    //@Scheduled(fixedRate = 6000000)
     //@Scheduled(cron = "${api.airport.fetch.time}")
     private void initAirports() throws InterruptedException {
         log.info("Initializing airports....");
