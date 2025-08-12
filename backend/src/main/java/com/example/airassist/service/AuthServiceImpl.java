@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -34,13 +35,15 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private RedisTemplate redisTemplate;
+    private MailSenderService mailSenderService;
 
-    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder, RedisTemplate redisTemplate) {
+    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder, RedisTemplate redisTemplate, MailSenderService mailSenderService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.redisTemplate = redisTemplate;
+        this.mailSenderService = mailSenderService;
     }
 
     @Value("${redis.email.existence.key}")
@@ -77,6 +80,8 @@ public class AuthServiceImpl implements AuthService {
         checkUserExists(signupRequest.getEmail());
 
         User user = createUserWithGeneratedPassword(signupRequest.getEmail(), signupRequest.getFirstName(), signupRequest.getLastName());
+        String password = user.getPassword();
+        user.setPassword(passwordEncoder.encode(password));
 
         user =  Optional.ofNullable(userRepository.save(user)).orElseThrow(() ->{
             log.error("An unexpected error occurred while saving user");
@@ -86,6 +91,13 @@ public class AuthServiceImpl implements AuthService {
         String key = REDIS_PREFIX + user.getEmail();
         redisTemplate.opsForValue().set(key, true, Duration.ofHours(1));
         log.info("User {} saved successfully", user.getEmail());
+
+        mailSenderService.sendMailWithPass(user.getEmail(), password);
+    }
+
+    @Override
+    public boolean checkLogged(String token) {
+        return jwtTokenProvider.validateToken(token);
     }
 
     private User createUserWithGeneratedPassword(String email, String firstName, String lastName) {
@@ -104,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
         }
         return User.builder()
                 .email(email)
-                .password(passwordEncoder.encode(generatedPassword))
+                .password(generatedPassword)
                 .firstName(firstName)
                 .lastName(lastName)
                 .isFirstLogin(true)

@@ -1,8 +1,10 @@
 package com.example.airassist.service;
 
+import com.example.airassist.common.dto.UserDTO;
 import com.example.airassist.common.exceptions.InvalidUserIdException;
 import com.example.airassist.common.exceptions.UserNotFoundException;
 import com.example.airassist.common.exceptions.UserSaveFailedException;
+import com.example.airassist.persistence.dao.CaseFileRepository;
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +21,13 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
+    private CaseFileRepository caseFileRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, CaseFileRepository caseFileRepository) {
         log.info("UserServiceImpl initialized");
         this.userRepository = userRepository;
+        this.caseFileRepository = caseFileRepository;
     }
 
 
@@ -80,15 +84,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable){
+    public Page<UserDTO> findAll(Pageable pageable){
         log.info("Finding all users");
         Page<User> users = userRepository.findAll(pageable);
-        if (!users.iterator().hasNext()) {
+        Page<UserDTO> userDTOs = users.map(user -> {
+            int casesCount = caseFileRepository.countByUserId(user.getId());
+            return new UserDTO(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail(),
+                    user.getRole(),
+                    casesCount
+            );
+        });
+        if (!userDTOs.iterator().hasNext()) {
             log.warn("No users found");
         } else {
-            log.info("Users found: {}", users);
+            log.info("Users found: {}", userDTOs);
         }
-        return users;
+        return userDTOs;
     }
 
 

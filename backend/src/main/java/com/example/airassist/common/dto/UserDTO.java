@@ -2,18 +2,20 @@ package com.example.airassist.common.dto;
 
 import com.example.airassist.persistence.model.Role;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
-public class SignupRequest {
+import java.util.Set;
+import java.util.UUID;
 
-    private String email;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserDTO {
+    private UUID id;
     private String firstName;
     private String lastName;
-    private Role role;
+    private String email;
+    private Set<Role> role;
+    private int casesCount;
 }

@@ -2,6 +2,7 @@ package com.example.airassist.common.exceptions.handler;
 
 
 import com.example.airassist.common.exceptions.*;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -56,5 +57,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUserException(UserException e) {
         log.error("Unexpected error occurred", e);
         return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<String> handleSignatureException(SignatureException e) {
+        log.error("Unexpected error occurred", e);
+        return ResponseEntity.status(401).body("Invalid or expired authentication token. Please log in again.");
     }
 }
