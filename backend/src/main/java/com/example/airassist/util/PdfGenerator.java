@@ -91,7 +91,7 @@ public class PdfGenerator {
                 drawText(cs, "Date Generated:", xLeft, footerY, PDType1Font.HELVETICA_BOLD, 10);
                 drawText(cs, nullSafe(caseDate), xLeft + 160f, footerY, PDType1Font.HELVETICA, 10);
 
-                footerY -= (10 + 8);
+                footerY -= (18);
                 drawText(cs, "Signature:", xLeft, footerY, PDType1Font.HELVETICA_BOLD, 10);
                 drawLine(cs, xLeft + 160f, footerY - 2f, xLeft + 380f, footerY - 2f);
 
