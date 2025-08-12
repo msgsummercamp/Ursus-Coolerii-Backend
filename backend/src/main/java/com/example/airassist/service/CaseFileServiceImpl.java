@@ -266,6 +266,7 @@ public class CaseFileServiceImpl implements CaseFileService {
 
     private CaseFileSummaryDTO mapCaseFileToDTO(CaseFile caseFile) {
         CaseFileSummaryDTO caseFileSummaryDTO = new CaseFileSummaryDTO();
+        caseFileSummaryDTO.setCaseId(caseFile.getCaseId());
         caseFileSummaryDTO.setContractId(caseFile.getContractId());
         caseFileSummaryDTO.setCaseDate(caseFile.getCaseDate());
         CaseFlights caseFlight = caseFile.getCaseFlights().stream().filter(CaseFlights::isProblemFlight).findFirst().orElse(null);
