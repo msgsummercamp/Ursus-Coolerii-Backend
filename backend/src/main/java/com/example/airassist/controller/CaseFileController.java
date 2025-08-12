@@ -61,4 +61,10 @@ public class CaseFileController {
         log.info("Get all cases response, count {}", cases.size());
         return ResponseEntity.ok(cases);
     }
+
+    @GetMapping("/passenger")
+    public ResponseEntity<List<CaseFileSummaryDTO>> getCasesForPassenger(@RequestParam("passengerId") Long passengerId) {
+        List<CaseFileSummaryDTO> cases = caseFileService.getCaseSummariesByPassengerId(passengerId);
+        return ResponseEntity.ok(cases);
+    }
 }
