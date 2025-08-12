@@ -278,6 +278,14 @@ public class CaseFileServiceImpl implements CaseFileService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(Long passengerId) {
+        List<CaseFile> cases = caseFileRepository.findAll().stream()
+                .filter(c -> c.getPassenger() != null && passengerId.equals(c.getPassenger().getId()))
+                .collect(Collectors.toList());
+        return cases.stream().map(this::mapCaseFileToDTO).collect(Collectors.toList());
+    }
+
     private String generateContractId(Timestamp caseDate) {
         String timestamp = String.valueOf(caseDate.getTime());
         return timestamp.substring(Math.max(0, timestamp.length() - 6));
