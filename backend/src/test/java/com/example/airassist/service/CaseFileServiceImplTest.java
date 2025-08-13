@@ -16,7 +16,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.eq;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -404,6 +408,7 @@ class CaseFileServiceImplTest {
             user.setEmail("mock@gmail.com");
             Passenger passenger = new Passenger();
             passenger.setFirstName("Mock");
+            passenger.setDateOfBirth(new Date());
             CaseRequest saveRequest = new CaseRequest();
             saveRequest.setUserEmail("mock@gmail.com");
             saveRequest.setPassenger(passenger);
@@ -435,6 +440,7 @@ class CaseFileServiceImplTest {
                     .user(user)
                     .status(com.example.airassist.common.enums.CaseStatus.NOT_ASSIGNED)
                     .caseId(UUID.randomUUID())
+                    .caseDate(new Timestamp(System.currentTimeMillis()))
                     .build();
 
             CaseFlights caseFlights = CaseFlights.builder()
@@ -459,5 +465,65 @@ class CaseFileServiceImplTest {
             assertEquals(com.example.airassist.common.enums.CaseStatus.NOT_ASSIGNED, result.getStatus());
         }
 
+    }
+
+    @Test
+    @DisplayName("Should send email with PDF when saving case file")
+    void saveCaseFile_shouldSendEmailWithPdf() {
+        User user = new User();
+        user.setEmail("mock@gmail.com");
+        Passenger passenger = new Passenger();
+        passenger.setFirstName("Mock");
+        passenger.setDateOfBirth(new Date());
+        CaseRequest saveRequest = new CaseRequest();
+        saveRequest.setUserEmail("mock@gmail.com");
+        saveRequest.setPassenger(passenger);
+        saveRequest.setReservationNumber("ABC123");
+        FlightSaveDTO flightDTO = new FlightSaveDTO();
+        flightDTO.setFlightNumber("FL123");
+        flightDTO.setDepartureAirport("Cluj");
+        flightDTO.setDestinationAirport("Bucuresti");
+        flightDTO.setAirlineName("Wizz");
+        flightDTO.setFirstFlight(true);
+        flightDTO.setLastFlight(true);
+        saveRequest.setFlights(List.of(flightDTO));
+
+        Flight flight = Flight.builder()
+                .flightNumber("FL123")
+                .departureAirport("Cluj")
+                .destinationAirport("Bucuresti")
+                .build();
+
+        CaseFile caseFile = CaseFile.builder()
+                .passenger(passenger)
+                .reservationNumber("ABC123")
+                .user(user)
+                .status(com.example.airassist.common.enums.CaseStatus.NOT_ASSIGNED)
+                .caseId(UUID.randomUUID())
+                .caseDate(new Timestamp(System.currentTimeMillis()))
+                .build();
+
+        CaseFlights caseFlights = CaseFlights.builder()
+                .caseFile(caseFile)
+                .flight(flight)
+                .isFirst(true)
+                .isLast(true)
+                .isProblemFlight(false)
+                .build();
+
+        when(userService.findByEmail("mock@gmail.com")).thenReturn(Optional.of(user));
+        when(passengerRepository.save(passenger)).thenReturn(passenger);
+        when(caseFileRepository.save(any(CaseFile.class))).thenReturn(caseFile);
+        when(flightService.saveAll(anyList())).thenReturn(List.of(flight));
+        when(caseFlightRepository.saveAll(anyList())).thenReturn(List.of(caseFlights));
+
+        CaseFile result = caseFileService.saveCase(saveRequest, List.of());
+
+        assertNotNull(result);
+        verify(mailSenderService).sendMailWithCaseAndPdf(
+                eq("mock@gmail.com"),
+                eq(caseFile.getContractId()),
+                any(byte[].class)
+        );
     }
 }

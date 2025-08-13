@@ -10,6 +10,7 @@ import com.example.airassist.persistence.dao.CaseFlightRepository;
 import com.example.airassist.persistence.dao.PassengerRepository;
 import com.example.airassist.persistence.model.*;
 import com.example.airassist.redis.Airport;
+import com.example.airassist.util.PdfGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -141,7 +142,25 @@ public class CaseFileServiceImpl implements CaseFileService {
         caseFlightRepository.saveAll(caseFlights);
         caseFileToSave.setCaseFlights(caseFlights);
 
-        mailSenderService.sendMailWithCase(saveRequest.getUserEmail(), caseFileToSave.getCaseId().toString());
+        byte[] pdfBytes;
+        try {
+            pdfBytes = PdfGenerator.generateCasePdf(
+                    caseFileToSave.getContractId(),
+                    caseFileToSave.getCaseDate().toString(),
+                    passenger.getFirstName(),
+                    passenger.getLastName(),
+                    passenger.getDateOfBirth().toString(),
+                    passenger.getPhoneNumber(),
+                    passenger.getAddress(),
+                    passenger.getPostalCode(),
+                    caseFileToSave.getReservationNumber()
+            );
+        } catch (IOException e) {
+            log.error("Error generating PDF for case file: ", e);
+            throw new RuntimeException("Failed to generate PDF for case file", e);
+        }
+
+        mailSenderService.sendMailWithCaseAndPdf(saveRequest.getUserEmail(), caseFileToSave.getContractId(), pdfBytes);
 
         return caseFileToSave;
     }
@@ -257,6 +276,14 @@ public class CaseFileServiceImpl implements CaseFileService {
         List<CaseFile> cases = caseFileRepository.findAll();
         return cases.stream().map(this::mapCaseFileToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(Long passengerId) {
+        List<CaseFile> cases = caseFileRepository.findAll().stream()
+                .filter(c -> c.getPassenger() != null && passengerId.equals(c.getPassenger().getId()))
+                .collect(Collectors.toList());
+        return cases.stream().map(this::mapCaseFileToDTO).collect(Collectors.toList());
     }
 
     private String generateContractId(Timestamp caseDate) {

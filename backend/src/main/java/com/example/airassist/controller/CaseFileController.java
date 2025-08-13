@@ -59,12 +59,17 @@ public class CaseFileController {
         log.info("Get all cases response, count {}", cases.size());
         return ResponseEntity.ok(cases);
     }
-
+  
     @GetMapping("/contract/{caseId}")
     public ResponseEntity<CaseDetailsDTO> getCaseDetailsByCaseId(@PathVariable UUID caseId) {
         log.info("Get case details by case ID request received: {}", caseId);
         CaseDetailsDTO details = caseFileService.getCaseDetailsByCaseId(caseId);
         log.info("Case details response: {}", details);
         return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
+  
+    @GetMapping("/passenger")
+    public ResponseEntity<List<CaseFileSummaryDTO>> getCasesForPassenger(@RequestParam("passengerId") Long passengerId) {
+        List<CaseFileSummaryDTO> cases = caseFileService.getCaseSummariesByPassengerId(passengerId);
+        return ResponseEntity.ok(cases);
     }
 }
