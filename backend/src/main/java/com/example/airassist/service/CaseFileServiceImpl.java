@@ -132,7 +132,6 @@ public class CaseFileServiceImpl implements CaseFileService {
         caseFileToSave.setDocuments(documents);
         caseFileToSave = caseFileRepository.save(caseFileToSave);
 
-
         List<CaseFlights> caseFlights = getCaseFlights(caseFileToSave, saveRequest.getFlights());
         CaseFile finalCaseFileToSave = caseFileToSave;
 
@@ -324,5 +323,70 @@ public class CaseFileServiceImpl implements CaseFileService {
                 : null);
         caseFileSummaryDTO.setColleague(employeeName);
         return caseFileSummaryDTO;
+    }
+
+    @Override
+    public CaseDetailsDTO getCaseDetailsByCaseId(UUID caseId) {
+        CaseFile caseFile = caseFileRepository.findById(caseId)
+                .orElseThrow(() -> new RuntimeException("Case not found"));
+        CaseDetailsDTO dto = new CaseDetailsDTO();
+        dto.setCaseId(caseFile.getCaseId());
+        dto.setContractId(caseFile.getContractId());
+        dto.setReservationNumber(caseFile.getReservationNumber());
+
+        dto.setFlights(sortFlights(caseFile.getCaseFlights()));
+
+        Passenger p = caseFile.getPassenger();
+        PassengerDTO passengerDTO = new PassengerDTO();
+        passengerDTO.setFirstName(p.getFirstName());
+        passengerDTO.setLastName(p.getLastName());
+        passengerDTO.setDateOfBirth(p.getDateOfBirth());
+        passengerDTO.setPhone(p.getPhoneNumber());
+        passengerDTO.setAddress(p.getAddress());
+        passengerDTO.setPostalCode(p.getPostalCode());
+        passengerDTO.setEmail(caseFile.getUser().getEmail());
+        dto.setPassenger(passengerDTO);
+
+        dto.setDocuments(caseFile.getDocuments().stream().map(doc -> {
+            DocumentDTO d = new DocumentDTO();
+            d.setFilename(doc.getId().toString());
+            d.setUploadTimestamp(caseFile.getCaseDate());
+            return d;
+        }).toList());
+
+        return dto;
+    }
+
+    private List<FlightDetailsDTO> sortFlights(List<CaseFlights> caseFlights) {
+        List<FlightDetailsDTO> dtos = caseFlights.stream().map(cf -> {
+            FlightDetailsDTO dto = new FlightDetailsDTO();
+            dto.setFlightNumber(cf.getFlight().getFlightNumber());
+            dto.setAirline(cf.getFlight().getAirline().getName());
+            dto.setReservationNumber(cf.getCaseFile().getReservationNumber());
+            dto.setDepartureAirport(cf.getFlight().getDepartureAirport());
+            dto.setDestinationAirport(cf.getFlight().getDestinationAirport());
+            dto.setProblemFlight(cf.isProblemFlight());
+            dto.setPlannedDepartureTime(cf.getFlight().getDepartureTime());
+            dto.setPlannedArrivalTime(cf.getFlight().getArrivalTime());
+            dto.setFirstFlight(cf.isFirst());
+            dto.setLastFlight(cf.isLast());
+            return dto;
+        }).toList();
+
+        List<FlightDetailsDTO> sorted = new java.util.ArrayList<>();
+        FlightDetailsDTO current = dtos.stream().filter(FlightDetailsDTO::isFirstFlight).findFirst().orElse(null);
+        if (current == null) return dtos;
+
+        sorted.add(current);
+        while (!current.isLastFlight()) {
+            String nextDeparture = current.getDestinationAirport();
+            FlightDetailsDTO next = dtos.stream()
+                    .filter(f -> !sorted.contains(f) && f.getDepartureAirport().equals(nextDeparture))
+                    .findFirst().orElse(null);
+            if (next == null) break;
+            sorted.add(next);
+            current = next;
+        }
+        return sorted;
     }
 }

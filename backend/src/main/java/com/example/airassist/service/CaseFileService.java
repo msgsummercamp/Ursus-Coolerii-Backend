@@ -1,10 +1,8 @@
 package com.example.airassist.service;
 
-import com.example.airassist.common.dto.CalculateRewardRequest;
-import com.example.airassist.common.dto.CaseRequest;
-import com.example.airassist.common.dto.CaseFileSummaryDTO;
-import com.example.airassist.common.dto.EligibilityRequest;
+import com.example.airassist.common.dto.*;
 import com.example.airassist.persistence.model.CaseFile;
+import com.example.airassist.persistence.model.Document;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -16,6 +14,7 @@ public interface CaseFileService {
     int calculateCaseReward(CalculateRewardRequest calculateRewardRequest);
     CaseFile saveCase(CaseRequest saveRequest, List<MultipartFile> uploadedDocuments);
     List<CaseFileSummaryDTO> getAllCaseSummaries();
+    CaseDetailsDTO getCaseDetailsByCaseId(UUID caseId);
     List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(Long passengerId);
     CaseFile findCaseFileById(UUID caseId);
 }

@@ -1,11 +1,8 @@
 package com.example.airassist.controller;
 
-import com.example.airassist.common.dto.CalculateRewardRequest;
-import com.example.airassist.common.dto.CaseFileSummaryDTO;
-import com.example.airassist.common.dto.EligibilityRequest;
-import com.example.airassist.common.dto.SaveRequest;
-import com.example.airassist.common.dto.SignupRequest;
+import com.example.airassist.common.dto.*;
 import com.example.airassist.persistence.model.CaseFile;
+import com.example.airassist.persistence.model.Document;
 import com.example.airassist.persistence.model.Passenger;
 import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
@@ -65,7 +62,14 @@ public class CaseFileController {
         log.info("Get all cases response, count {}", cases.size());
         return ResponseEntity.ok(cases);
     }
-
+  
+    @GetMapping("/contract/{caseId}")
+    public ResponseEntity<CaseDetailsDTO> getCaseDetailsByCaseId(@PathVariable UUID caseId) {
+        log.info("Get case details by case ID request received: {}", caseId);
+        CaseDetailsDTO details = caseFileService.getCaseDetailsByCaseId(caseId);
+        log.info("Case details response: {}", details);
+        return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
+  
     @GetMapping("/passenger")
     public ResponseEntity<List<CaseFileSummaryDTO>> getCasesForPassenger(@RequestParam("passengerId") Long passengerId) {
         List<CaseFileSummaryDTO> cases = caseFileService.getCaseSummariesByPassengerId(passengerId);
