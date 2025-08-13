@@ -29,10 +29,10 @@ public class JwtTokenProvider {
         String username = authentication.getName();
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + expirationMs);
-        String authorities = authentication.getAuthorities().stream()
+        Set<String> authorities = authentication.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority())
                 .map(a -> a.split("_")[1])
-                .collect(Collectors.joining(","));
+                .collect(Collectors.toSet());
 
         return Jwts.builder()
                 .subject(username)

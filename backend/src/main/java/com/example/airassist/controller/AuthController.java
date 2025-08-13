@@ -39,7 +39,6 @@ public class AuthController {
 
     private void setCookie(String token, HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
-                .httpOnly(true)
                 .secure(false)
                 .path("/")
                 .maxAge(Duration.ofHours(1))
