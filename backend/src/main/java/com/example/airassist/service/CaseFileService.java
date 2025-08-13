@@ -8,6 +8,7 @@ import com.example.airassist.persistence.model.CaseFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CaseFileService {
     Boolean isEligible(EligibilityRequest eligibilityRequest);
@@ -16,4 +17,5 @@ public interface CaseFileService {
     CaseFile saveCase(CaseRequest saveRequest, List<MultipartFile> uploadedDocuments);
     List<CaseFileSummaryDTO> getAllCaseSummaries();
     List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(Long passengerId);
+    CaseFile findCaseFileById(UUID caseId);
 }
