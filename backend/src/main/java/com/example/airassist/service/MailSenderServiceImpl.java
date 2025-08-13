@@ -1,6 +1,8 @@
 package com.example.airassist.service;
 
+import org.springframework.mail.javamail.MimeMessageHelper;
 import jakarta.mail.Message;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -8,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.UUID;
 
 @Slf4j
@@ -44,17 +47,24 @@ public class MailSenderServiceImpl implements MailSenderService {
 
     @Override
     @Async
-    public void sendMailWithCase(String to, String caseId) {
-        SimpleMailMessage message = createGenericMessageToUser(to);
-        message.setSubject("Ursus Coolerii Air Assist - Case Update");
-        message.setText("Dear user,\n\n" +
-                "This is an update regarding your support case.\n" +
-                "Your case ID is: " + caseId + "\n\n" +
-                "We will notify you of any further updates.\n\n" +
-                "Best regards,\n" +
-                "Ursus Coolerii Air Assist Team");
-        this.mailSender.send(message);
+    public void sendMailWithCaseAndPdf(String to, String contractId, byte[] pdfBytes) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setFrom(this.username);
+            helper.setTo(to);
+            helper.setSubject("Ursus Coolerii Air Assist - Case Update");
+            helper.setText("Dear user,\n\n" +
+                    "This is an update regarding your support case.\n" +
+                    "Your case ID is: " + contractId + "\n\n" +
+                    "Please find the attached PDF document with more details.\n\n" +
+                    "Best regards,\n" +
+                    "Ursus Coolerii Air Assist Team");
+            helper.addAttachment("case-details.pdf", () -> new ByteArrayInputStream(pdfBytes), "application/pdf");
+            mailSender.send(mimeMessage);
+        } catch (Exception e) {
+            log.error("Error sending email with case and PDF: ", e);
+        }
+
     }
-
-
 }

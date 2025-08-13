@@ -15,4 +15,5 @@ public interface CaseFileService {
     CaseFile saveCase(CaseRequest saveRequest, List<MultipartFile> uploadedDocuments);
     List<CaseFileSummaryDTO> getAllCaseSummaries();
     CaseDetailsDTO getCaseDetailsByCaseId(UUID caseId);
+    List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(Long passengerId);
 }
