@@ -268,7 +268,7 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     @Override
-    public List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(Long passengerId) {
+    public List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(UUID passengerId) {
         List<CaseFile> cases = caseFileRepository.findAll().stream()
                 .filter(c -> c.getPassenger() != null && passengerId.equals(c.getPassenger().getId()))
                 .toList();

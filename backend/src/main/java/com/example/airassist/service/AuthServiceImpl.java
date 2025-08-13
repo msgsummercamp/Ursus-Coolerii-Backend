@@ -1,13 +1,11 @@
 package com.example.airassist.service;
 
-import com.example.airassist.common.dto.LoginRequest;
-import com.example.airassist.common.dto.LoginResponse;
-import com.example.airassist.common.dto.SignupRequest;
-import com.example.airassist.common.dto.SignupResponse;
+import com.example.airassist.common.dto.*;
 import com.example.airassist.common.exceptions.UserAlreadyExistsException;
 import com.example.airassist.common.exceptions.UserSaveFailedException;
 import com.example.airassist.jwt.JwtTokenProvider;
 import com.example.airassist.persistence.dao.UserRepository;
+import com.example.airassist.persistence.model.Role;
 import com.example.airassist.persistence.model.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -98,6 +97,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean checkLogged(String token) {
         return jwtTokenProvider.validateToken(token);
+    }
+
+    @Override
+    public AuthenticatedUserDTO getAuthenticatedUserDTO(String token) {
+        jwtTokenProvider.validateToken(token);
+        Set<Role> userRoles = jwtTokenProvider.getRoles(token);
+        AuthenticatedUserDTO authenticatedUserDTO = new AuthenticatedUserDTO();
+        authenticatedUserDTO.setRoles(userRoles);
+        return authenticatedUserDTO;
     }
 
     private User createUserWithGeneratedPassword(String email, String firstName, String lastName) {

@@ -1,19 +1,20 @@
 package com.example.airassist.controller;
 
+import com.example.airassist.common.dto.*;
 import com.example.airassist.service.AuthService;
-import com.example.airassist.common.dto.LoginRequest;
-import com.example.airassist.common.dto.LoginResponse;
-import com.example.airassist.common.dto.SignupRequest;
-import com.example.airassist.common.dto.SignupResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 import java.util.Map;
 
 @Slf4j
@@ -37,13 +38,20 @@ public class AuthController {
     }
 
     private void setCookie(String token, HttpServletResponse response) {
-        String cookieValue = String.format(
-                "jwt=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=None; Secure=false",
-                token, 60 * 60
-        );
-        response.addHeader("Set-Cookie", cookieValue);
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                .secure(false)
+                .path("/")
+                .maxAge(Duration.ofHours(1))
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
+
+    @GetMapping("/me")
+    public ResponseEntity<AuthenticatedUserDTO> getCurrentUser(HttpServletRequest request){
+        return ResponseEntity.ok(authService.getAuthenticatedUserDTO(getJwtFromCookies(request)));
+    }
 
 
     @GetMapping("/check")
