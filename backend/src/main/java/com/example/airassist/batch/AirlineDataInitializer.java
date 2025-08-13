@@ -5,7 +5,6 @@ import com.example.airassist.persistence.model.Airline;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
