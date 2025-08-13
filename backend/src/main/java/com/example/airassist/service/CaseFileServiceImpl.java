@@ -268,11 +268,9 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     @Override
-    public List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(UUID passengerId) {
-        List<CaseFile> cases = caseFileRepository.findAll().stream()
-                .filter(c -> c.getPassenger() != null && passengerId.equals(c.getPassenger().getId()))
-                .toList();
-        return cases.stream().map(this::mapCaseFileToDTO).collect(Collectors.toList());
+    public Page<CaseFileSummaryDTO> getCaseSummariesByPassengerId(UUID passengerId, Pageable pageable) {
+        Page<CaseFile> cases = caseFileRepository.findByUserId(passengerId, pageable);
+        return cases.map(this::mapCaseFileToDTO);
     }
 
     @Override

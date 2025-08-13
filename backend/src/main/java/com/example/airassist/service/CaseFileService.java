@@ -14,7 +14,7 @@ public interface CaseFileService {
     int calculateCaseReward(CalculateRewardRequest calculateRewardRequest);
     CaseFile saveCase(CaseRequest saveRequest, List<MultipartFile> uploadedDocuments);
     CaseDetailsDTO getCaseDetailsByCaseId(UUID caseId);
-    List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(UUID passengerId);
+    Page<CaseFileSummaryDTO> getCaseSummariesByPassengerId(UUID passengerId, Pageable pageable);
     CaseFile findCaseFileById(UUID caseId);
     Page<CaseFileSummaryDTO> findAll(Pageable pageable);
 }
