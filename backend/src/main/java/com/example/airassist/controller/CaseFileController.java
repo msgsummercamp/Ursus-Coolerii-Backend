@@ -66,6 +66,7 @@ public class CaseFileController {
         CaseDetailsDTO details = caseFileService.getCaseDetailsByCaseId(caseId);
         log.info("Case details response: {}", details);
         return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
+    }
   
     @GetMapping("/passenger")
     public ResponseEntity<List<CaseFileSummaryDTO>> getCasesForPassenger(@RequestParam("passengerId") Long passengerId) {
