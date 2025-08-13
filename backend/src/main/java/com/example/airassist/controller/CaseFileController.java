@@ -2,15 +2,13 @@ package com.example.airassist.controller;
 
 import com.example.airassist.common.dto.*;
 import com.example.airassist.persistence.model.CaseFile;
+import com.example.airassist.persistence.model.Document;
 import com.example.airassist.persistence.model.Passenger;
 import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
 import com.example.airassist.util.PdfGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -58,24 +56,14 @@ public class CaseFileController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CaseFileSummaryDTO>> getAllCases(
-            @RequestParam(defaultValue = "0") Integer pageIndex,
-            @RequestParam(defaultValue = "5") Integer pageSize,
-            @RequestParam(value = "passengerId", required = false) UUID passengerId
-    ) {
+    public ResponseEntity<List<CaseFileSummaryDTO>> getAllCases(
+            @RequestParam(value = "passengerId", required = false) UUID passengerId) {
         log.info("Get all cases request received");
-        Pageable pageable = PageRequest.of(pageIndex, pageSize);
-        Page<CaseFileSummaryDTO> cases = caseFileService.findAll(pageable);
-        if (cases.isEmpty()) {
-            log.warn("No cases found");
-            return ResponseEntity.noContent().build();
-        }
-        log.info("Get all cases successfully: {}", cases);
         List<CaseFileSummaryDTO> cases;
         if (passengerId != null) {
             cases = caseFileService.getCaseSummariesByPassengerId(passengerId);
         } else {
-            cases = caseFileService.findAll(pageable);
+            cases = caseFileService.getAllCaseSummaries();
         }
         log.info("Get all cases response, count {}", cases.size());
         return ResponseEntity.ok(cases);
