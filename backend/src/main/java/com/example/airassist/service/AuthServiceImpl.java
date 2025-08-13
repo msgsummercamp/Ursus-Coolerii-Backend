@@ -7,6 +7,7 @@ import com.example.airassist.jwt.JwtTokenProvider;
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.Role;
 import com.example.airassist.persistence.model.User;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -100,12 +101,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthenticatedUserDTO getAuthenticatedUserDTO(String token) {
-        jwtTokenProvider.validateToken(token);
-        Set<Role> userRoles = jwtTokenProvider.getRoles(token);
-        AuthenticatedUserDTO authenticatedUserDTO = new AuthenticatedUserDTO();
-        authenticatedUserDTO.setRoles(userRoles);
-        return authenticatedUserDTO;
+    public boolean checkMatchID(String token, UUID passengerId) {
+        UUID idFromToken = jwtTokenProvider.getId(token);
+        if(passengerId.equals(idFromToken)){
+            return true;
+        }
+        return false;
     }
 
     private User createUserWithGeneratedPassword(String email, String firstName, String lastName) {
