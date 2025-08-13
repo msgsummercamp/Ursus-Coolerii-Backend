@@ -63,21 +63,17 @@ public class CaseFileController {
             @RequestParam(defaultValue = "5") Integer pageSize,
             @RequestParam(value = "passengerId", required = false) UUID passengerId
     ) {
-        log.info("Get all cases request received");
         Pageable pageable = PageRequest.of(pageIndex, pageSize);
-        Page<CaseFileSummaryDTO> cases = caseFileService.findAll(pageable);
+        Page<CaseFileSummaryDTO> cases;
+        if (passengerId != null) {
+            cases = caseFileService.getCaseSummariesByPassengerId(passengerId, pageable);
+        } else {
+            cases = caseFileService.findAll(pageable);
+        }
         if (cases.isEmpty()) {
             log.warn("No cases found");
             return ResponseEntity.noContent().build();
         }
-        log.info("Get all cases successfully: {}", cases);
-        List<CaseFileSummaryDTO> cases;
-        if (passengerId != null) {
-            cases = caseFileService.getCaseSummariesByPassengerId(passengerId);
-        } else {
-            cases = caseFileService.findAll(pageable);
-        }
-        log.info("Get all cases response, count {}", cases.size());
         return ResponseEntity.ok(cases);
     }
   
