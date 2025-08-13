@@ -14,6 +14,8 @@ import com.example.airassist.util.PdfGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +42,7 @@ public class CaseFileServiceImpl implements CaseFileService {
     private final AirlineService airlineService;
     private final CaseFlightRepository caseFlightRepository;
     private final FlightService flightService;
-    private MailSenderService mailSenderService;
+    private final MailSenderService mailSenderService;
 
     @Value("${MIN_REWARD}")
     private int minReward;
@@ -73,12 +75,6 @@ public class CaseFileServiceImpl implements CaseFileService {
         this.caseFlightRepository = caseFlightRepository;
         this.flightService = flightService;
         this.mailSenderService = mailSenderService;
-    }
-
-    @Override
-    @Transactional
-    public List<CaseFile> findAllCaseFiles() {
-        return caseFileRepository.findAll();
     }
 
     @Override
@@ -272,17 +268,11 @@ public class CaseFileServiceImpl implements CaseFileService {
     }
 
     @Override
-    public List<CaseFileSummaryDTO> getAllCaseSummaries() {
-        List<CaseFile> cases = caseFileRepository.findAll();
-        return cases.stream().map(this::mapCaseFileToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<CaseFileSummaryDTO> getCaseSummariesByPassengerId(Long passengerId) {
+        //TODO not long -> UUID
         List<CaseFile> cases = caseFileRepository.findAll().stream()
                 .filter(c -> c.getPassenger() != null && passengerId.equals(c.getPassenger().getId()))
-                .collect(Collectors.toList());
+                .toList();
         return cases.stream().map(this::mapCaseFileToDTO).collect(Collectors.toList());
     }
 
@@ -290,6 +280,13 @@ public class CaseFileServiceImpl implements CaseFileService {
     public CaseFile findCaseFileById(UUID caseId) {
         return caseFileRepository.findById(caseId)
                 .orElseThrow(() -> new RuntimeException("Case not found"));
+    }
+
+    @Override
+    public Page<CaseFileSummaryDTO> findAll(Pageable pageable) {
+        log.info("Finding all cases");
+        Page<CaseFile> cases = caseFileRepository.findAll(pageable);
+        return cases.map(this::mapCaseFileToDTO);
     }
 
     private String generateContractId(Timestamp caseDate) {

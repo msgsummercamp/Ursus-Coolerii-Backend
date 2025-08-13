@@ -2,13 +2,15 @@ package com.example.airassist.controller;
 
 import com.example.airassist.common.dto.*;
 import com.example.airassist.persistence.model.CaseFile;
-import com.example.airassist.persistence.model.Document;
 import com.example.airassist.persistence.model.Passenger;
 import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
 import com.example.airassist.util.PdfGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -56,10 +58,18 @@ public class CaseFileController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CaseFileSummaryDTO>> getAllCases() {
+    public ResponseEntity<Page<CaseFileSummaryDTO>> getAllCases(
+            @RequestParam(defaultValue = "0") Integer pageIndex,
+            @RequestParam(defaultValue = "5") Integer pageSize
+    ) {
         log.info("Get all cases request received");
-        List<CaseFileSummaryDTO> cases = caseFileService.getAllCaseSummaries();
-        log.info("Get all cases response, count {}", cases.size());
+        Pageable pageable = PageRequest.of(pageIndex, pageSize);
+        Page<CaseFileSummaryDTO> cases = caseFileService.findAll(pageable);
+        if (cases.isEmpty()) {
+            log.warn("No cases found");
+            return ResponseEntity.noContent().build();
+        }
+        log.info("Get all cases successfully: {}", cases);
         return ResponseEntity.ok(cases);
     }
   
@@ -69,7 +79,8 @@ public class CaseFileController {
         CaseDetailsDTO details = caseFileService.getCaseDetailsByCaseId(caseId);
         log.info("Case details response: {}", details);
         return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
-  
+    }
+
     @GetMapping("/passenger")
     public ResponseEntity<List<CaseFileSummaryDTO>> getCasesForPassenger(@RequestParam("passengerId") Long passengerId) {
         List<CaseFileSummaryDTO> cases = caseFileService.getCaseSummariesByPassengerId(passengerId);
