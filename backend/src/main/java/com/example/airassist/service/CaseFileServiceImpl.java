@@ -286,6 +286,12 @@ public class CaseFileServiceImpl implements CaseFileService {
         return cases.stream().map(this::mapCaseFileToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public CaseFile findCaseFileById(UUID caseId) {
+        return caseFileRepository.findById(caseId)
+                .orElseThrow(() -> new RuntimeException("Case not found"));
+    }
+
     private String generateContractId(Timestamp caseDate) {
         String timestamp = String.valueOf(caseDate.getTime());
         return timestamp.substring(Math.max(0, timestamp.length() - 6));
