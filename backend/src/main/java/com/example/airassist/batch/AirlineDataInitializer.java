@@ -20,7 +20,6 @@ public class AirlineDataInitializer {
 
 
   //  @PostConstruct
-    @Scheduled(fixedRate = 6000000)
     public void loadData(){
         try(Reader reader = new FileReader("../database/airlines_clean.csv")){
             List<Airline> airlines = new CsvToBeanBuilder<Airline>(reader)
