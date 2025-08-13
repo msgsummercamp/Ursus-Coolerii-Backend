@@ -26,6 +26,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -284,6 +285,12 @@ public class CaseFileServiceImpl implements CaseFileService {
                 .filter(c -> c.getPassenger() != null && passengerId.equals(c.getPassenger().getId()))
                 .collect(Collectors.toList());
         return cases.stream().map(this::mapCaseFileToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public CaseFile findCaseFileById(UUID caseId) {
+        return caseFileRepository.findById(caseId)
+                .orElseThrow(() -> new RuntimeException("Case not found"));
     }
 
     private String generateContractId(Timestamp caseDate) {
