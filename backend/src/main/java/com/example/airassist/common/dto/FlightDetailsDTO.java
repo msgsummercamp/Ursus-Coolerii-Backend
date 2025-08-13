@@ -13,4 +13,6 @@ public class FlightDetailsDTO {
     private boolean problemFlight;
     private Timestamp plannedDepartureTime;
     private Timestamp plannedArrivalTime;
+    private boolean isFirstFlight;
+    private boolean isLastFlight;
 }

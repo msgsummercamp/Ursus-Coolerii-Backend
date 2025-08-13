@@ -13,5 +13,4 @@ public class CaseDetailsDTO {
     private List<FlightDetailsDTO> flights;
     private PassengerDTO passenger;
     private List<DocumentDTO> documents;
-    private List<CommentDTO> comments;
 }
