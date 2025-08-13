@@ -56,9 +56,15 @@ public class CaseFileController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CaseFileSummaryDTO>> getAllCases() {
+    public ResponseEntity<List<CaseFileSummaryDTO>> getAllCases(
+            @RequestParam(value = "passengerId", required = false) UUID passengerId) {
         log.info("Get all cases request received");
-        List<CaseFileSummaryDTO> cases = caseFileService.getAllCaseSummaries();
+        List<CaseFileSummaryDTO> cases;
+        if (passengerId != null) {
+            cases = caseFileService.getCaseSummariesByPassengerId(passengerId);
+        } else {
+            cases = caseFileService.getAllCaseSummaries();
+        }
         log.info("Get all cases response, count {}", cases.size());
         return ResponseEntity.ok(cases);
     }
@@ -69,11 +75,6 @@ public class CaseFileController {
         CaseDetailsDTO details = caseFileService.getCaseDetailsByCaseId(caseId);
         log.info("Case details response: {}", details);
         return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
-  
-    @GetMapping("/passenger")
-    public ResponseEntity<List<CaseFileSummaryDTO>> getCasesForPassenger(@RequestParam("passengerId") Long passengerId) {
-        List<CaseFileSummaryDTO> cases = caseFileService.getCaseSummariesByPassengerId(passengerId);
-        return ResponseEntity.ok(cases);
     }
 
     @GetMapping("/pdf/{caseId}")
