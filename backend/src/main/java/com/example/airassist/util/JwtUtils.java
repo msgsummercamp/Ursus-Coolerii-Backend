@@ -30,6 +30,10 @@ public class JwtUtils {
        return checkRole(token, "PASSENGER");
     }
 
+    public static boolean hasRoleEmployee(String token) {
+        return checkRole(token, "EMPLOYEE");
+    }
+
     private static boolean checkRole(String token, String role) {
         try {
             String[] parts = token.split("\\.");

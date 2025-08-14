@@ -100,8 +100,14 @@ public class CaseFileController {
         CaseFile caseFile = caseFileService.findCaseFileById(caseId);
         CaseDetailsDTO details = DtoUtils.getCaseDetailsDtoFromCaseFile(caseFile);
         String token = JwtUtils.getJwtFromCookies(request);
-        if(!authService.checkMatchID(token,caseFile.getUser().getId()) || JwtUtils.hasRolePassenger(token))
+
+        log.info("Case details response: {}", details);
+
+        boolean sameId = authService.checkMatchID(token, caseFile.getUser().getId());
+        if(!sameId && !JwtUtils.hasRoleAdmin(token) && !JwtUtils.hasRoleEmployee(token)) {
             return ResponseEntity.status(401).build();
+        }
+
         log.info("Case details response: {}", details);
         return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
     }
