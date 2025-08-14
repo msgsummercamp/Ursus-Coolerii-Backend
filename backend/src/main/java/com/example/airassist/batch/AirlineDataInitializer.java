@@ -27,6 +27,7 @@ public class AirlineDataInitializer {
                     .withIgnoreLeadingWhiteSpace(true)
                     .build()
                     .parse();
+           // airlineRepository.deleteAll();
             airlineRepository.saveAll(airlines);
             log.info("Airlines data loaded successfully");
         }catch (Exception e){
