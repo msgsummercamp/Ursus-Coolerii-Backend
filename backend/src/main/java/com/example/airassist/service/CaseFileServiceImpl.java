@@ -10,6 +10,7 @@ import com.example.airassist.persistence.dao.CaseFlightRepository;
 import com.example.airassist.persistence.dao.PassengerRepository;
 import com.example.airassist.persistence.model.*;
 import com.example.airassist.redis.Airport;
+import com.example.airassist.util.DtoUtils;
 import com.example.airassist.util.PdfGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -323,35 +324,10 @@ public class CaseFileServiceImpl implements CaseFileService {
     public CaseDetailsDTO getCaseDetailsByCaseId(UUID caseId) {
         CaseFile caseFile = caseFileRepository.findById(caseId)
                 .orElseThrow(() -> new RuntimeException("Case not found"));
-        CaseDetailsDTO dto = new CaseDetailsDTO();
-        dto.setCaseId(caseFile.getCaseId());
-        dto.setContractId(caseFile.getContractId());
-        dto.setReservationNumber(caseFile.getReservationNumber());
-
-        dto.setFlights(sortFlights(caseFile.getCaseFlights()));
-
-        Passenger p = caseFile.getPassenger();
-        PassengerDTO passengerDTO = new PassengerDTO();
-        passengerDTO.setFirstName(p.getFirstName());
-        passengerDTO.setLastName(p.getLastName());
-        passengerDTO.setDateOfBirth(p.getDateOfBirth());
-        passengerDTO.setPhone(p.getPhoneNumber());
-        passengerDTO.setAddress(p.getAddress());
-        passengerDTO.setPostalCode(p.getPostalCode());
-        passengerDTO.setEmail(caseFile.getUser().getEmail());
-        dto.setPassenger(passengerDTO);
-
-        dto.setDocuments(caseFile.getDocuments().stream().map(doc -> {
-            DocumentDTO d = new DocumentDTO();
-            d.setFilename(doc.getId().toString());
-            d.setUploadTimestamp(caseFile.getCaseDate());
-            return d;
-        }).toList());
-
-        return dto;
+        return DtoUtils.getCaseDetailsDtoFromCaseFile(caseFile);
     }
 
-    private List<FlightDetailsDTO> sortFlights(List<CaseFlights> caseFlights) {
+   /* private List<FlightDetailsDTO> sortFlights(List<CaseFlights> caseFlights) {
         List<FlightDetailsDTO> dtos = caseFlights.stream().map(cf -> {
             FlightDetailsDTO dto = new FlightDetailsDTO();
             dto.setFlightNumber(cf.getFlight().getFlightNumber());
@@ -382,5 +358,5 @@ public class CaseFileServiceImpl implements CaseFileService {
             current = next;
         }
         return sorted;
-    }
+    }*/
 }
