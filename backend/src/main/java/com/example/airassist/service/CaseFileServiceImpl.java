@@ -27,6 +27,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -140,15 +142,14 @@ public class CaseFileServiceImpl implements CaseFileService {
 
         byte[] pdfBytes;
         try {
+            LocalDate caseDateOnly = caseFileToSave.getCaseDate().toLocalDateTime().toLocalDate();
+            DateTimeFormatter europeanFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String formattedDate = caseDateOnly.format(europeanFormat);
             pdfBytes = PdfGenerator.generateCasePdf(
                     caseFileToSave.getContractId(),
-                    caseFileToSave.getCaseDate().toString(),
+                    formattedDate,
                     passenger.getFirstName(),
                     passenger.getLastName(),
-                    passenger.getDateOfBirth().toString(),
-                    passenger.getPhoneNumber(),
-                    passenger.getAddress(),
-                    passenger.getPostalCode(),
                     caseFileToSave.getReservationNumber()
             );
         } catch (IOException e) {
