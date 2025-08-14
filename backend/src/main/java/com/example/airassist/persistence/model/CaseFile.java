@@ -38,7 +38,9 @@ public class CaseFile {
     private DisruptionDetails disruptionDetails;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id",
+            foreignKey = @ForeignKey(name = "fk_case_file_user",
+                    foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"))
     private User user;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
@@ -46,7 +48,9 @@ public class CaseFile {
     private Passenger passenger;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_id",
+        foreignKey  = @ForeignKey(name = "fk_case_file_employee",
+            foreignKeyDefinition = "FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE SET NULL"))
     private User employee;
 
     @JsonManagedReference
