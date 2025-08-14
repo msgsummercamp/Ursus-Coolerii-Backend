@@ -5,6 +5,7 @@ import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.persistence.model.Passenger;
 import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
+import com.example.airassist.util.DtoUtils;
 import com.example.airassist.util.JwtUtils;
 import com.example.airassist.util.PdfGenerator;
 import jakarta.servlet.http.Cookie;
@@ -96,10 +97,17 @@ public class CaseFileController {
     @GetMapping("/contract/{caseId}")
     public ResponseEntity<CaseDetailsDTO> getCaseDetailsByCaseId(@PathVariable UUID caseId, HttpServletRequest request) {
         log.info("Get case details by case ID request received: {}", caseId);
-        CaseDetailsDTO details = caseFileService.getCaseDetailsByCaseId(caseId);
+        CaseFile caseFile = caseFileService.findCaseFileById(caseId);
+        CaseDetailsDTO details = DtoUtils.getCaseDetailsDtoFromCaseFile(caseFile);
+        String token = JwtUtils.getJwtFromCookies(request);
 
-        if(!authService.checkMatchID(JwtUtils.getJwtFromCookies(request), details.getCaseId()))
+        log.info("Case details response: {}", details);
+
+        boolean sameId = authService.checkMatchID(token, caseFile.getUser().getId());
+        if(!sameId && !JwtUtils.hasRoleAdmin(token) && !JwtUtils.hasRoleEmployee(token)) {
             return ResponseEntity.status(401).build();
+        }
+
         log.info("Case details response: {}", details);
         return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
     }

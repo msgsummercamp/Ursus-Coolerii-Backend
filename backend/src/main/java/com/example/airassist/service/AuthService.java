@@ -11,5 +11,4 @@ public interface AuthService {
     void signup(SignupRequest signupRequest);
     boolean checkLogged(String token);
     boolean checkMatchID(String token, UUID passengerId);
-    boolean checkMatchID(String token, UUID passengerId);
 }

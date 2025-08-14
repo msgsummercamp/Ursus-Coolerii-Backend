@@ -82,7 +82,9 @@ public class AuthServiceImpl implements AuthService {
         User user = createUserWithGeneratedPassword(signupRequest.getEmail(), signupRequest.getFirstName(), signupRequest.getLastName());
         String password = user.getPassword();
         user.setPassword(passwordEncoder.encode(password));
-
+        Set<Role> roles = new HashSet<Role>();
+        roles.add(new Role("PASSENGER"));
+        user.setRole(roles);
         user =  Optional.ofNullable(userRepository.save(user)).orElseThrow(() ->{
             log.error("An unexpected error occurred while saving user");
             return new UserSaveFailedException("An unexpected error occurred while saving user", HttpStatus.INTERNAL_SERVER_ERROR);
