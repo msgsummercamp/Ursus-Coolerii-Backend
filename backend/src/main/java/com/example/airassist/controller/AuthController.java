@@ -2,6 +2,7 @@ package com.example.airassist.controller;
 
 import com.example.airassist.common.dto.*;
 import com.example.airassist.service.AuthService;
+import com.example.airassist.util.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,34 +46,10 @@ public class AuthController {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-    }
-
-
-    @GetMapping("/me")
-    public ResponseEntity<AuthenticatedUserDTO> getCurrentUser(HttpServletRequest request){
-        return ResponseEntity.ok(authService.getAuthenticatedUserDTO(getJwtFromCookies(request)));
-    }
-
-
-    @GetMapping("/check")
-    public ResponseEntity<Map<String, Boolean>> checkLogin(HttpServletRequest request){
-        log.info("Check login request received : {}", request.getRequestURI());
-        String token = getJwtFromCookies(request);
-        authService.checkLogged(token);
-        return ResponseEntity.ok(Map.of("loggedIn", true));
 
     }
 
-    private String getJwtFromCookies(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("jwt".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
+
 
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest){

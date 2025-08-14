@@ -1,5 +1,6 @@
 package com.example.airassist.service;
 
+import com.example.airassist.config.CustomUserDetails;
 import com.example.airassist.persistence.dao.UserRepository;
 import com.example.airassist.persistence.model.User;
 import lombok.AllArgsConstructor;
@@ -26,8 +27,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         Set<GrantedAuthority> authorities = user.getRole().stream().map(role ->
                         new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toSet());
-        return new org.springframework.security.core.userdetails.User(
+        return new CustomUserDetails(
+                user.getId(),
                 user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
                 user.getPassword(),
                 authorities
         );
