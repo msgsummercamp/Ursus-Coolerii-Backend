@@ -328,36 +328,4 @@ public class CaseFileServiceImpl implements CaseFileService {
         return DtoUtils.getCaseDetailsDtoFromCaseFile(caseFile);
     }
 
-   /* private List<FlightDetailsDTO> sortFlights(List<CaseFlights> caseFlights) {
-        List<FlightDetailsDTO> dtos = caseFlights.stream().map(cf -> {
-            FlightDetailsDTO dto = new FlightDetailsDTO();
-            dto.setFlightNumber(cf.getFlight().getFlightNumber());
-            dto.setAirline(cf.getFlight().getAirline().getName());
-            dto.setReservationNumber(cf.getCaseFile().getReservationNumber());
-            dto.setDepartureAirport(cf.getFlight().getDepartureAirport());
-            dto.setDestinationAirport(cf.getFlight().getDestinationAirport());
-            dto.setProblemFlight(cf.isProblemFlight());
-            dto.setPlannedDepartureTime(cf.getFlight().getDepartureTime());
-            dto.setPlannedArrivalTime(cf.getFlight().getArrivalTime());
-            dto.setFirstFlight(cf.isFirst());
-            dto.setLastFlight(cf.isLast());
-            return dto;
-        }).toList();
-
-        List<FlightDetailsDTO> sorted = new java.util.ArrayList<>();
-        FlightDetailsDTO current = dtos.stream().filter(FlightDetailsDTO::isFirstFlight).findFirst().orElse(null);
-        if (current == null) return dtos;
-
-        sorted.add(current);
-        while (!current.isLastFlight()) {
-            String nextDeparture = current.getDestinationAirport();
-            FlightDetailsDTO next = dtos.stream()
-                    .filter(f -> !sorted.contains(f) && f.getDepartureAirport().equals(nextDeparture))
-                    .findFirst().orElse(null);
-            if (next == null) break;
-            sorted.add(next);
-            current = next;
-        }
-        return sorted;
-    }*/
 }
