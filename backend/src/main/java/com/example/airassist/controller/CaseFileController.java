@@ -24,8 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -111,15 +111,13 @@ public class CaseFileController {
 
         byte[] pdfBytes;
         try {
+            LocalDate caseDateOnly = caseFile.getCaseDate().toLocalDateTime().toLocalDate();
+            String formattedDate = caseDateOnly.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             pdfBytes = PdfGenerator.generateCasePdf(
                     caseFile.getContractId(),
-                    caseFile.getCaseDate().toString(),
+                    formattedDate,
                     passenger.getFirstName(),
                     passenger.getLastName(),
-                    passenger.getDateOfBirth().toString(),
-                    passenger.getPhoneNumber(),
-                    passenger.getAddress(),
-                    passenger.getPostalCode(),
                     caseFile.getReservationNumber()
             );
         } catch (IOException e) {
