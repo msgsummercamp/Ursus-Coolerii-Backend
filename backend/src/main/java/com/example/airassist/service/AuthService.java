@@ -10,7 +10,6 @@ public interface AuthService {
     LoginResponse login(LoginRequest loginRequest);
     void signup(SignupRequest signupRequest);
     boolean checkLogged(String token);
-
     boolean checkMatchID(String token, UUID passengerId);
-    /// AuthenticatedUserDTO getAuthenticatedUserDTO(String token);
+    boolean checkMatchID(String token, UUID passengerId);
 }
