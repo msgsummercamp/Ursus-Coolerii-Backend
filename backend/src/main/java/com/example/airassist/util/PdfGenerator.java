@@ -49,7 +49,6 @@ public class PdfGenerator {
 
             try (PDPageContentStream cs = new PDPageContentStream(document, page)) {
 
-                // ================== 1) HEADER (prima poza) ==================
 
                 float titleY = y - 8f;
                 y = drawCenteredText(cs,
@@ -87,7 +86,6 @@ public class PdfGenerator {
                 drawLine(cs, xLeft, y, xRight, y);
                 y -= 12f;
 
-                // ================== 2) BODY TEXT (two columns, ASCII, no diacritics) ==================
 
                 float gutter2   = mm(8);
                 float contentW2 = xRight - xLeft;
@@ -196,7 +194,6 @@ public class PdfGenerator {
 
                 y = Math.min(yL2, yR2) - mm(4);
 
-                // ================== 3) BLOCUL DE JOS (a treia poza) ==================
 
                 float centerX   = xLeft + (xRight - xLeft) / 2f;
                 float linesGap  = mm(22);
