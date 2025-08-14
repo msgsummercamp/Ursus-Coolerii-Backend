@@ -94,9 +94,12 @@ public class CaseFileController {
     }
   
     @GetMapping("/contract/{caseId}")
-    public ResponseEntity<CaseDetailsDTO> getCaseDetailsByCaseId(@PathVariable UUID caseId) {
+    public ResponseEntity<CaseDetailsDTO> getCaseDetailsByCaseId(@PathVariable UUID caseId, HttpServletRequest request) {
         log.info("Get case details by case ID request received: {}", caseId);
         CaseDetailsDTO details = caseFileService.getCaseDetailsByCaseId(caseId);
+
+        if(!authService.checkMatchID(JwtUtils.getJwtFromCookies(request), details.getCaseId()))
+            return ResponseEntity.status(401).build();
         log.info("Case details response: {}", details);
         return ResponseEntity.ok(caseFileService.getCaseDetailsByCaseId(caseId));
     }
