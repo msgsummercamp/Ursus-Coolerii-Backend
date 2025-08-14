@@ -5,7 +5,10 @@ import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.persistence.model.Passenger;
 import com.example.airassist.service.AuthService;
 import com.example.airassist.service.CaseFileService;
+import com.example.airassist.util.JwtUtils;
 import com.example.airassist.util.PdfGenerator;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -13,11 +16,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -42,15 +48,19 @@ public class CaseFileController {
         return caseFileService.calculateCaseReward(calculateRewardRequest);
     }
 
-
     @PostMapping
     public ResponseEntity<UUID> saveCase(@RequestPart("saveRequest") SaveRequest saveRequest,
-                                         @RequestPart("files") MultipartFile[] uploadedDocuments) {
+                                         @RequestPart("files") MultipartFile[] uploadedDocuments,
+                                         HttpServletRequest request) {
         log.info("Save case request received: {}", saveRequest);
         SignupRequest  signupRequest = saveRequest.getSignupRequest();
 
-        if(signupRequest != null)
+        if(signupRequest != null) {
             authService.signup(signupRequest);
+        }
+        else if(!authService.checkLogged(JwtUtils.getJwtFromCookies(request))) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         CaseFile savedCaseFile =  caseFileService.saveCase(saveRequest.getCaseRequest(), Arrays.asList(uploadedDocuments));
 
         log.info("Save case successfully: {}", savedCaseFile);
@@ -61,11 +71,17 @@ public class CaseFileController {
     public ResponseEntity<Page<CaseFileSummaryDTO>> getAllCases(
             @RequestParam(defaultValue = "0") Integer pageIndex,
             @RequestParam(defaultValue = "5") Integer pageSize,
-            @RequestParam(value = "passengerId", required = false) UUID passengerId
+            @RequestParam(value = "passengerId", required = false) UUID passengerId,
+            HttpServletRequest request
     ) {
         Pageable pageable = PageRequest.of(pageIndex, pageSize);
         Page<CaseFileSummaryDTO> cases;
+
+
         if (passengerId != null) {
+
+            if(!authService.checkMatchID(JwtUtils.getJwtFromCookies(request), passengerId))
+                return ResponseEntity.status(401).build();
             cases = caseFileService.getCaseSummariesByPassengerId(passengerId, pageable);
         } else {
             cases = caseFileService.findAll(pageable);

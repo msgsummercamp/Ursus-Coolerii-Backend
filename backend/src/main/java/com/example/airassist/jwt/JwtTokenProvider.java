@@ -1,5 +1,6 @@
 package com.example.airassist.jwt;
 
+import com.example.airassist.config.CustomUserDetails;
 import com.example.airassist.persistence.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.security.Key;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,10 +35,22 @@ public class JwtTokenProvider {
                 .map(grantedAuthority -> grantedAuthority.getAuthority())
                 .map(a -> a.split("_")[1])
                 .collect(Collectors.toSet());
+        Object obj = authentication.getPrincipal();
 
+        String firstName = "";
+        String lastName = "";
+        UUID id = null;
+        if(obj instanceof CustomUserDetails) {
+            firstName = ((CustomUserDetails) obj).getFirstName();
+            lastName = ((CustomUserDetails) obj).getLastName();
+            id = ((CustomUserDetails) obj).getUserId();
+        }
         return Jwts.builder()
                 .subject(username)
+                .claim("id", id != null ? id.toString() : "" )
                 .claim("authorities", authorities)
+                .claim("firstName", firstName)
+                .claim("lastName", lastName)
                 .issuedAt(new Date())
                 .expiration(expireDate)
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -54,6 +68,11 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public UUID getId(String token){
+        Claims claims = extractAllClaims(token);
+        return UUID.fromString(claims.get("id").toString());
     }
 
     public Set<Role> getRoles(String token){
