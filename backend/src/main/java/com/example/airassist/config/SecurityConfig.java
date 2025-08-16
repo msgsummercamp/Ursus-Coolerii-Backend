@@ -71,7 +71,7 @@ public class SecurityConfig {
         Dotenv dotenv = Dotenv.load();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(dotenv.get("ALLOWED_URL")));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

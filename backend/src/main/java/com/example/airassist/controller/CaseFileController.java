@@ -1,6 +1,7 @@
 package com.example.airassist.controller;
 
 import com.example.airassist.common.dto.*;
+import com.example.airassist.common.enums.CaseStatus;
 import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.persistence.model.Passenger;
 import com.example.airassist.service.AuthService;
@@ -136,5 +137,50 @@ public class CaseFileController {
                 .header("Content-Type", "application/pdf")
                 .header("Content-Disposition", "attachment; filename=case_" + caseId + ".pdf")
                 .body(pdfBytes);
+    }
+
+    @PutMapping("/{caseId}/assign-employee")
+    public ResponseEntity<Void> assignEmployeeToCase(
+            @PathVariable UUID caseId,
+            @RequestParam UUID employeeId,
+            HttpServletRequest request) {
+        String token = JwtUtils.getJwtFromCookies(request);
+        if (!JwtUtils.hasRoleAdmin(token) && !JwtUtils.hasRoleEmployee(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            caseFileService.assignEmployee(caseId, employeeId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            log.error("Error assigning employee: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PatchMapping("/{caseId}/status")
+    public ResponseEntity<Void> updateCaseStatus(
+            @PathVariable UUID caseId,
+            @RequestParam CaseStatus status,
+            @RequestParam(required = false) UUID employeeId,
+            HttpServletRequest request) {
+        String token = JwtUtils.getJwtFromCookies(request);
+        CaseFile caseFile = caseFileService.findCaseFileById(caseId);
+
+        boolean isAdmin = JwtUtils.hasRoleAdmin(token);
+        boolean isAssignedEmployee = employeeId != null &&
+                caseFile.getEmployee() != null &&
+                employeeId.equals(caseFile.getEmployee().getId());
+        if (!isAdmin && (status == CaseStatus.ELIGIBLE || status == CaseStatus.NOT_ELIGIBLE) && !isAssignedEmployee) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (isAdmin && (status == CaseStatus.ELIGIBLE || status == CaseStatus.NOT_ELIGIBLE) && caseFile.getEmployee() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        if (!isAdmin && !isAssignedEmployee) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        caseFileService.updateCaseStatus(caseId, status, employeeId);
+        return ResponseEntity.ok().build();
     }
 }
