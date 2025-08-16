@@ -339,4 +339,14 @@ public class CaseFileServiceImpl implements CaseFileService {
         caseFileRepository.save(caseFile);
     }
 
+    @Override
+    public void updateCaseStatus(UUID caseId, CaseStatus status, UUID employeeId) {
+        CaseFile caseFile = caseFileRepository.findById(caseId)
+                .orElseThrow(() -> new RuntimeException("Case not found"));
+        caseFile.setStatus(status);
+        if (status == CaseStatus.NOT_ASSIGNED) {
+            caseFile.setEmployee(null);
+        }
+        caseFileRepository.save(caseFile);
+    }
 }
