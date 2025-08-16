@@ -328,4 +328,15 @@ public class CaseFileServiceImpl implements CaseFileService {
         return DtoUtils.getCaseDetailsDtoFromCaseFile(caseFile);
     }
 
+    @Override
+    public void assignEmployee(UUID caseId, UUID employeeId) {
+        CaseFile caseFile = caseFileRepository.findById(caseId)
+                .orElseThrow(() -> new RuntimeException("Case not found"));
+        User employee = userService.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        caseFile.setEmployee(employee);
+        caseFile.setStatus(CaseStatus.ASSIGNED);
+        caseFileRepository.save(caseFile);
+    }
+
 }

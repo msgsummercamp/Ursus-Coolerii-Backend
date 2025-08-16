@@ -137,4 +137,22 @@ public class CaseFileController {
                 .header("Content-Disposition", "attachment; filename=case_" + caseId + ".pdf")
                 .body(pdfBytes);
     }
+
+    @PutMapping("/{caseId}/assign-employee")
+    public ResponseEntity<Void> assignEmployeeToCase(
+            @PathVariable UUID caseId,
+            @RequestParam UUID employeeId,
+            HttpServletRequest request) {
+        String token = JwtUtils.getJwtFromCookies(request);
+        if (!JwtUtils.hasRoleAdmin(token) && !JwtUtils.hasRoleEmployee(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            caseFileService.assignEmployee(caseId, employeeId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            log.error("Error assigning employee: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }

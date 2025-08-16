@@ -17,4 +17,5 @@ public interface CaseFileService {
     Page<CaseFileSummaryDTO> getCaseSummariesByPassengerId(UUID passengerId, Pageable pageable);
     CaseFile findCaseFileById(UUID caseId);
     Page<CaseFileSummaryDTO> findAll(Pageable pageable);
+    void assignEmployee(UUID caseId, UUID employeeId);
 }
