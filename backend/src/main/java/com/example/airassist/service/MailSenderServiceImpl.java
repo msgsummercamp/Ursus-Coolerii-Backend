@@ -36,12 +36,12 @@ public class MailSenderServiceImpl implements MailSenderService {
     @Async
     public void sendMailWithPass(String to, String pass) {
         SimpleMailMessage message = createGenericMessageToUser(to);
-        message.setSubject("Ursus Coolerii Air Assist - New Account");
+        message.setSubject("Coolerii Air Assist - New Account");
         message.setText("Your new account has been created successfully.\n" +
                 "Your password is: " + pass + "\n\n" +
                 "Please don't forget to change it when you log in for the first time.\n\n" +
                 "Best regards,\n" +
-                "Ursus Coolerii Air Assist Team");
+                "Coolerii Air Assist Team");
         this.mailSender.send(message);
     }
 
@@ -53,13 +53,13 @@ public class MailSenderServiceImpl implements MailSenderService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
             helper.setFrom(this.username);
             helper.setTo(to);
-            helper.setSubject("Ursus Coolerii Air Assist - Case Update");
+            helper.setSubject("Coolerii Air Assist - Case Update");
             helper.setText("Dear user,\n\n" +
                     "This is an update regarding your support case.\n" +
                     "Your case ID is: " + contractId + "\n\n" +
                     "Please find the attached PDF document with more details.\n\n" +
                     "Best regards,\n" +
-                    "Ursus Coolerii Air Assist Team");
+                    "Coolerii Air Assist Team");
             helper.addAttachment("case-details.pdf", () -> new ByteArrayInputStream(pdfBytes), "application/pdf");
             mailSender.send(mimeMessage);
         } catch (Exception e) {

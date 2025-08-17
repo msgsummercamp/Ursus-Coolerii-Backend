@@ -23,7 +23,7 @@ public class CaseFlights {
     @JoinColumn(name = "case_id")
     private CaseFile caseFile;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @MapsId("flightId")
     @JoinColumn(name = "flight_id")
     private Flight flight;

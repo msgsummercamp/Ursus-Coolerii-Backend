@@ -6,15 +6,22 @@ import com.example.airassist.common.exceptions.UserNotFoundException;
 import com.example.airassist.common.exceptions.UserSaveFailedException;
 import com.example.airassist.persistence.dao.CaseFileRepository;
 import com.example.airassist.persistence.dao.UserRepository;
+import com.example.airassist.persistence.model.CaseFile;
 import com.example.airassist.persistence.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,12 +29,18 @@ public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
     private CaseFileRepository caseFileRepository;
+    private final RedisTemplate redisTemplate;
+
+    @Value("${redis.email.existence.key}")
+    private String REDIS_PREFIX;
+
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, CaseFileRepository caseFileRepository) {
+    public UserServiceImpl(UserRepository userRepository, CaseFileRepository caseFileRepository, RedisTemplate redisTemplate) {
         log.info("UserServiceImpl initialized");
         this.userRepository = userRepository;
         this.caseFileRepository = caseFileRepository;
+        this.redisTemplate = redisTemplate;
     }
 
 
@@ -79,7 +92,15 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
 
+        User user = userRepository.findById(id).get();
+
+        List<CaseFile> toDelete = caseFileRepository.findAll().stream()
+                .filter(d -> d.getUser() != null && d.getUser().getId().equals(id))
+                .collect(Collectors.toList());
+        caseFileRepository.deleteAll(toDelete);
         userRepository.deleteById(id);
+        String key = REDIS_PREFIX + user.getEmail();
+        redisTemplate.opsForValue().set(key, true,Duration.ofHours(1));
         log.info("User with id {} deleted successfully", id);
     }
 
