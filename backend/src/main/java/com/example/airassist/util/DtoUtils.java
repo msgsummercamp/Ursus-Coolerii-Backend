@@ -75,7 +75,7 @@ public class DtoUtils {
 
         dto.setDocuments(caseFile.getDocuments().stream().map(doc -> {
             DocumentDTO d = new DocumentDTO();
-            d.setFilename(doc.getId().toString());
+            d.setFilename("doc-" + doc.getId().toString());
             d.setUploadTimestamp(caseFile.getCaseDate());
             return d;
         }).toList());
