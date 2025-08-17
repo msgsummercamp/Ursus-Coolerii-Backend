@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
         caseFileRepository.deleteAll(toDelete);
         userRepository.deleteById(id);
         String key = REDIS_PREFIX + user.getEmail();
-        redisTemplate.opsForValue().set(key, true,Duration.ofHours(1));
+        redisTemplate.delete(key);
         log.info("User with id {} deleted successfully", id);
     }
 
