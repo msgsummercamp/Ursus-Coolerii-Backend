@@ -43,7 +43,7 @@ public class CaseFile {
                     foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"))
     private User user;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name= "passenger_id", nullable = false)
     private Passenger passenger;
 
@@ -54,14 +54,14 @@ public class CaseFile {
     private User employee;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "caseFile")
+    @OneToMany(mappedBy = "caseFile", cascade = CascadeType.REMOVE)
     private List<CaseFlights> caseFlights;
 
     @OneToMany(mappedBy = "caseFile")
     @JsonManagedReference
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "caseFile", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "caseFile", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JsonManagedReference
     private List<Document> documents;
 }

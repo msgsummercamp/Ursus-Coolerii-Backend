@@ -18,21 +18,21 @@ import java.util.List;
 public class AirlineDataInitializer {
     private final AirlineRepository airlineRepository;
 
-
-    //@PostConstruct
+    @PostConstruct
     public void loadData(){
-        try(Reader reader = new FileReader("../database/airlines_clean.csv")){
-            List<Airline> airlines = new CsvToBeanBuilder<Airline>(reader)
-                    .withType(Airline.class)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .build()
-                    .parse();
-           // airlineRepository.deleteAll();
-            airlineRepository.saveAll(airlines);
-            log.info("Airlines data loaded successfully");
-        }catch (Exception e){
-            log.error("Error loading airlines data: {}", e.getMessage());
-            throw new RuntimeException("Failed to load airlines data", e);
+        if(airlineRepository.findAll().isEmpty()) {
+            try (Reader reader = new FileReader("../database/airlines_clean.csv")) {
+                List<Airline> airlines = new CsvToBeanBuilder<Airline>(reader)
+                        .withType(Airline.class)
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .build()
+                        .parse();
+                airlineRepository.saveAll(airlines);
+                log.info("Airlines data loaded successfully");
+            } catch (Exception e) {
+                log.error("Error loading airlines data: {}", e.getMessage());
+                throw new RuntimeException("Failed to load airlines data", e);
+            }
         }
     }
 }
